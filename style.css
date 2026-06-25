@@ -1,0 +1,1068 @@
+/* =========================================================
+   BWIFIKILL V4.0
+   PREMIUM CYBERDECK UI
+========================================================= */
+
+:root{
+
+    --bg:#020304;
+
+    --panel:#07090d;
+    --panel2:#0b0f14;
+    --panel3:#121822;
+
+    --border:rgba(255,255,255,.06);
+
+    --cyan:#00fffb;
+    --cyanSoft:rgba(0,255,251,.18);
+    --cyanGlow:rgba(0,255,251,.35);
+
+    --text:#f5f7fa;
+    --muted:#87909c;
+
+    --danger:#ff4747;
+
+}
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,
+body{
+    width:100%;
+    height:100%;
+}
+
+body{
+
+    overflow:hidden;
+
+    background: radial-gradient(circle at top, #050608 0%, #010101 60%);
+
+    color:var(--text);
+
+    font-family:Inter,sans-serif;
+
+}
+
+/* =========================================================
+   APP GRID
+========================================================= */
+
+.app-shell{
+
+    max-width: 1720px;
+    width: calc(100vw - 32px);
+    margin: 0 auto;
+
+    height:100vh;
+
+    padding:clamp(10px, 1.5vw, 18px);
+
+    display:grid;
+
+    grid-template-columns:
+    minmax(280px, 320px)
+    minmax(600px, 1fr)
+    minmax(260px, 300px);
+
+    grid-template-rows:
+    auto
+    1fr
+    auto;
+
+    gap:clamp(10px, 1vw, 18px);
+
+}
+
+/* =========================================================
+   PANELS
+========================================================= */
+
+.panel{
+
+    background:
+    linear-gradient(
+    180deg,
+    #0b0f14 0%,
+    #07090d 100%
+    );
+
+    border:
+    1px solid rgba(255,255,255,.06);
+
+    border-radius:18px;
+
+    box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.04),
+    0 12px 40px rgba(0,0,0,.45);
+
+}
+
+/* =========================================================
+   TOPBAR
+========================================================= */
+
+.topbar{
+
+    grid-column:1 / span 3;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 26px;
+
+}
+
+.logo-section{
+
+    display:flex;
+    align-items:center;
+
+    gap:14px;
+
+}
+
+.brand-text h1{
+
+    font-size:28px;
+    line-height:1;
+
+    font-weight:800;
+
+}
+
+.brand-text h1 span{
+    color:var(--cyan);
+}
+
+.brand-text p{
+
+    margin-top:7px;
+
+    font-size:15px;
+    color:#9ea6af;
+
+}
+
+.wifi-logo{
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+}
+
+.status-group{
+
+    display:flex;
+    align-items:center;
+
+    gap:18px;
+
+}
+
+.status-card{
+
+    min-width:160px;
+    height:56px;
+
+    padding:8px 16px;
+
+    border-radius:12px;
+
+    background:
+    linear-gradient(
+    180deg,
+    #10161f,
+    #090d13
+    );
+
+    border:
+    1px solid rgba(255,255,255,.06);
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+
+}
+
+.status-card label{
+
+    font-size:10px;
+    letter-spacing:1px;
+    font-weight: 700;
+
+    color:#96a0aa;
+
+    margin-bottom:2px;
+
+}
+
+.status-value{
+
+    font-size:24px;
+    font-weight:700;
+
+}
+
+.connected{
+
+    color:#51ff93;
+
+    display:flex;
+    align-items:center;
+
+    gap:10px;
+
+}
+
+.dot{
+
+    width:10px;
+    height:10px;
+
+    border-radius:50%;
+
+    background:#51ff93;
+
+    box-shadow:
+    0 0 10px rgba(81,255,147,.5);
+
+}
+
+/* =========================================================
+   LEFT COLUMN
+========================================================= */
+
+.left-column{
+
+    grid-column:1;
+    grid-row:2;
+
+    height:100%;
+    min-height:0;
+
+    display:flex;
+    flex-direction:column;
+
+}
+
+.serial-panel{
+
+    width:100%;
+    height:100%;
+
+    padding:18px;
+
+    display:flex;
+    flex-direction:column;
+
+}
+
+.panel-header{
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    margin-bottom:18px;
+
+}
+
+.panel-header h2{
+
+    font-size:24px;
+    letter-spacing:.5px;
+
+}
+
+.header-actions{
+
+    display:flex;
+    gap:10px;
+
+}
+
+.header-actions button{
+
+    width:82px;
+    height:40px;
+
+    border:none;
+    outline:none;
+
+    border-radius:12px;
+
+    background:
+    linear-gradient(
+    180deg,
+    #1a2230,
+    #0d131c
+    );
+
+    color:white;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    border:
+    1px solid rgba(255,255,255,.06);
+
+    box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 5px 14px rgba(0,0,0,.35);
+
+}
+
+.serial-console{
+
+    flex:1;
+    min-height:0;
+
+    padding:12px;
+
+    overflow-y:auto;
+
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    line-height:1.4;
+
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+
+    background:black;
+
+    border-radius:14px;
+
+    border:
+    1px solid rgba(255,255,255,.04);
+
+}
+
+.serial-console cyan{
+    color:var(--cyan);
+}
+
+.serial-console span{
+    color:#6f7b88;
+}
+
+.log-footer{
+
+    margin-top:18px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+}
+
+.log-footer label{
+
+    color:#98a1ac;
+    font-size:14px;
+
+}
+
+.log-footer select{
+
+    width:120px;
+    height:42px;
+
+    border-radius:12px;
+
+    border:
+    1px solid rgba(255,255,255,.06);
+
+    background:#10151d;
+
+    color:white;
+
+    padding:0 14px;
+
+}
+
+/* =========================================================
+   CENTER OLED
+========================================================= */
+
+.center-column{
+
+    grid-column:2;
+    grid-row:2;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    min-height:0;
+    min-width:0;
+
+    padding: 20px;
+
+}
+
+.oled-stage{
+    position:relative;
+    width:auto;
+    height:100%;
+    max-width:100%;
+    max-height:100%;
+    aspect-ratio: 1 / 1;
+    margin:0 auto;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* REAL PNG */
+
+.oled-module{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    user-select:none;
+    pointer-events:none;
+}
+
+/* OLED VIEWPORT */
+
+.oled-viewport{
+    position:absolute;
+
+    left: calc(100% * 124 / 760);
+    top: calc(100% * 168 / 760);
+
+    width: calc(100% * 512 / 760);
+    height: calc(100% * 382 / 760);
+
+    overflow:hidden;
+
+    border-radius:2px;
+
+    background: white;
+
+}
+
+#oledCanvas {
+    display: none;
+}
+
+/* SCANLINES */
+
+.oled-viewport::after{
+    display: none;
+}
+
+#oledCanvas{
+
+    width:100%;
+    height:100%;
+
+    image-rendering:pixelated;
+    image-rendering:crisp-edges;
+
+}
+
+/* DEMO */
+
+.oled-demo{
+
+    position:absolute;
+    inset:0;
+
+    padding:26px;
+
+    font-family:"JetBrains Mono",monospace;
+
+    color:var(--cyan);
+
+    text-shadow:
+    0 0 6px rgba(0,255,251,.28);
+
+}
+
+.oled-header{
+
+    display:flex;
+    justify-content:space-between;
+
+    font-size:18px;
+    font-weight:700;
+
+    margin-bottom:24px;
+
+}
+
+.oled-mode{
+
+    font-size:18px;
+    margin-bottom:24px;
+
+}
+
+/* GRAPH */
+
+.oled-graph{
+
+    width:100%;
+    height:170px;
+
+    display:flex;
+    align-items:flex-end;
+
+    gap:5px;
+
+}
+
+.bar{
+
+    width:10px;
+
+    background:var(--cyan);
+
+    box-shadow:
+    0 0 10px rgba(0,255,251,.45);
+
+}
+
+.h12{height:12px;}
+.h14{height:14px;}
+.h16{height:16px;}
+.h18{height:18px;}
+.h20{height:20px;}
+.h24{height:24px;}
+.h26{height:26px;}
+.h30{height:30px;}
+.h32{height:32px;}
+.h34{height:34px;}
+.h38{height:38px;}
+.h40{height:40px;}
+.h46{height:46px;}
+.h48{height:48px;}
+.h52{height:52px;}
+.h60{height:60px;}
+
+.oled-footer{
+
+    position:absolute;
+
+    left:26px;
+    right:26px;
+    bottom:22px;
+
+    display:flex;
+    justify-content:space-between;
+
+    font-size:16px;
+
+}
+
+/* =========================================================
+   RIGHT COLUMN
+========================================================= */
+
+
+
+.right-column{
+
+    grid-column:3;
+    grid-row:2;
+
+    display:flex;
+    flex-direction:column;
+
+    gap:16px;
+
+    min-height:0;
+    overflow-y:auto;
+    padding-right: 4px; /* for scrollbar */
+
+}
+
+.right-column::-webkit-scrollbar { width: 4px; }
+.right-column::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+/* TX RX */
+
+.tx-rx-row{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:18px;
+
+}
+
+.signal-card{
+
+    height:100px;
+
+    padding:12px;
+
+}
+
+.signal-card h3{
+
+    font-size:14px;
+    color:#b6bcc5;
+
+    margin-bottom:18px;
+
+}
+
+.signal-led{
+
+    width:48px;
+    height:48px;
+
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+}
+
+.tx-led{
+
+    background:
+    radial-gradient(circle,#ff3434,#430000);
+
+    box-shadow:
+    0 0 24px rgba(255,0,0,.4);
+
+}
+
+.rx-led{
+
+    background:
+    radial-gradient(circle,#00d9ff,#00293a);
+
+    box-shadow:
+    0 0 24px rgba(0,217,255,.3);
+
+}
+
+.led-core{
+
+    width:20px;
+    height:20px;
+
+    border-radius:50%;
+
+    background:white;
+
+    opacity:.7;
+
+}
+
+/* SETTINGS */
+
+.settings-panel{
+
+    padding:14px;
+
+}
+
+/* COLOR WHEEL */
+
+.color-wheel-wrap{
+
+    display:flex;
+    gap:18px;
+
+    margin-bottom:20px;
+
+}
+
+.color-wheel{
+
+    width:100px;
+    height:100px;
+
+    border-radius:50%;
+
+    background:
+    conic-gradient(
+    red,
+    yellow,
+    lime,
+    cyan,
+    blue,
+    magenta,
+    red
+    );
+
+}
+
+.rgb-preview{
+
+    display:flex;
+    flex-direction:column;
+
+    gap:14px;
+
+}
+
+.preview-box{
+
+    width:48px;
+    height:48px;
+
+    border-radius:12px;
+
+    background:rgb(0,255,251);
+
+    box-shadow:
+    0 0 20px rgba(0,255,251,.3);
+
+}
+
+.rgb-values{
+
+    font-family:"JetBrains Mono",monospace;
+    line-height:1.8;
+
+    color:#d7dde5;
+
+}
+
+.preset-colors{
+
+    display:flex;
+    gap:12px;
+
+}
+
+.preset{
+
+    width:36px;
+    height:36px;
+
+    border-radius:50%;
+
+    border:none;
+
+    cursor:pointer;
+
+}
+
+.cyan{background:#00fffb;}
+.green{background:#00ff2a;}
+.yellow{background:#ffe600;}
+.white{background:#f2f2f2;}
+.red{background:#ff1b1b;}
+.purple{background:#bb00ff;}
+
+.active{
+
+    box-shadow:
+    0 0 18px rgba(255,255,255,.3);
+
+}
+
+/* BRIGHTNESS */
+
+.brightness-slider{
+
+    width:100%;
+    margin-top:12px;
+
+}
+
+/* TOGGLES */
+
+.toggle-row{
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    margin-top:18px;
+
+}
+
+.toggle{
+
+    width:54px;
+    height:30px;
+
+    border-radius:30px;
+
+    background:#202833;
+
+    position:relative;
+
+}
+
+.toggle::after{
+
+    content:"";
+
+    position:absolute;
+
+    top:4px;
+    left:4px;
+
+    width:22px;
+    height:22px;
+
+    border-radius:50%;
+
+    background:white;
+
+}
+
+.toggle.active{
+
+    background:var(--cyan);
+
+}
+
+.toggle.active::after{
+    left:28px;
+}
+
+/* =========================================================
+   BOTTOM LEFT
+========================================================= */
+
+.bottom-left{
+
+    grid-column:1;
+    grid-row:3;
+
+    display:flex;
+    flex-direction:column;
+
+    gap:16px;
+
+}
+
+/* =========================================================
+   HARDWARE BUTTONS
+========================================================= */
+
+.hardware-btn{
+
+    width:100%;
+    height:clamp(48px, 4vw, 54px);
+
+    border:none;
+    outline:none;
+
+    border-radius:10px;
+
+    color:white;
+
+    font-size:16px;
+    font-weight:700;
+
+    cursor:pointer;
+
+    background:
+    linear-gradient(
+    180deg,
+    #1b2330,
+    #0c1118
+    );
+
+    border:
+    1px solid rgba(255,255,255,.06);
+
+    box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 10px 24px rgba(0,0,0,.4);
+
+    transition:.1s;
+
+}
+
+.hardware-btn:hover{
+    transform:translateY(-2px);
+}
+
+.hardware-btn:active{
+    transform:translateY(3px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 2px 4px rgba(0,0,0,.4);
+}
+
+.connect-btn{
+    color:#58ff98;
+}
+
+.disconnect-btn{
+    color:#ff5a5a;
+}
+
+.reboot-btn{
+    color:#ffd85c;
+}
+
+/* =========================================================
+   DPAD
+========================================================= */
+
+.bottom-center{
+
+    grid-column:2;
+    grid-row:3;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+}
+
+.dpad{
+
+    width:400px;
+    height:180px;
+
+    position:relative;
+
+    margin-bottom: 20px;
+
+}
+
+.key{
+
+    position:absolute;
+
+    width:92px;
+    height:56px;
+
+    border:none;
+    outline:none;
+
+    border-radius:14px;
+
+    background:
+    linear-gradient(
+    180deg,
+    #1b2330,
+    #0b1017
+    );
+
+    border:
+    1px solid rgba(255,255,255,.06);
+
+    color:#d9e0e7;
+
+    font-size:30px;
+    font-weight:700;
+
+    cursor:pointer;
+
+    box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 10px 26px rgba(0,0,0,.45);
+
+    transition:.1s;
+
+}
+
+.key:active{
+    transform:translateY(3px);
+}
+
+.up-key{
+    top:0;
+    left:184px;
+}
+
+.left-key{
+    top:60px;
+    left:78px;
+}
+
+.ok-key{
+
+    top:60px;
+    left:184px;
+
+    color:var(--cyan);
+
+    box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 0 20px rgba(0,255,251,.14);
+
+}
+
+.right-key{
+    top:60px;
+    right:78px;
+}
+
+.down-key{
+    bottom:0;
+    left:184px;
+}
+
+.back-key{
+
+    position:absolute;
+
+    right:0;
+    bottom:0px;
+
+    width:100px;
+    height:56px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:
+    linear-gradient(
+    180deg,
+    #2d1717,
+    #160909
+    );
+
+    border:
+    1px solid rgba(255,0,0,.25);
+
+    color:#ff4e4e;
+
+    font-size:22px;
+    font-weight:700;
+
+    cursor:pointer;
+
+}
+
+/* =========================================================
+   BOTTOM RIGHT
+========================================================= */
+
+.bottom-right{
+
+    grid-column:3;
+    grid-row:3;
+
+    display:flex;
+    flex-direction:column;
+
+    gap:16px;
+
+}
+
+.mode-btn{
+    height:58px;
+}
