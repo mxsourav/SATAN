@@ -313,14 +313,14 @@ export default function App() {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold font-sans tracking-tight uppercase text-zinc-100">
-                BWifiKill
+                SATAN
               </h1>
               <span className="text-[10px] font-mono border border-zinc-800 font-bold bg-zinc-900 text-zinc-300 rounded px-1.5 py-0.5">
-                V4.0
+                v1.0.0
               </span>
             </div>
             <div className="text-xs text-zinc-500 font-mono tracking-wider uppercase font-semibold mt-0.5">
-              ESP32 Cyberdeck Controller
+              Universal Serial Monitor for ESP32 Microcontrollers
             </div>
           </div>
         </div>

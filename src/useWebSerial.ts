@@ -51,9 +51,9 @@ export function useWebSerial({ canvasRef, onLogParsed }: UseWebSerialProps = {})
     line = sanitized;
 
     // Handle Handshake
-    if (line.includes("[BWIFIKILL_V4_CONNECTED]") || line.includes("[UPTIME]")) {
+    if (line.includes("[BWIFIKILL_V4_CONNECTED]") || line.includes("[SATAN_CONNECTED]") || line.includes("[UPTIME]")) {
       setStatus('CONNECTED');
-      if (line.includes("[BWIFIKILL_V4_CONNECTED]")) return;
+      if (line.includes("[BWIFIKILL_V4_CONNECTED]") || line.includes("[SATAN_CONNECTED]")) return;
     }
 
     // Handle Mirroring

@@ -1,6 +1,6 @@
 {
-  "name": "BWifiKill Cyberdeck Controller",
-  "description": "Interactive cyberdeck dashboard simulating real-time IR jamming, spectrum reception, and remote controller sequences.",
+  "name": "SATAN — Universal Serial Monitor",
+  "description": "Universal Serial Monitor and Controller for ESP32 Microcontrollers. Supports real-time serial logging, OLED mirroring, IR tools, and remote device control.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

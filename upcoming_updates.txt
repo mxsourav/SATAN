@@ -1,0 +1,143 @@
+=========================================================
+  SATAN — Upcoming Updates & Roadmap
+  Universal Serial Monitor for ESP32 Microcontrollers
+=========================================================
+
+Version: v1.0.0 (Current)
+Author:  mxsourav
+Date:    June 26, 2026
+
+---------------------------------------------------------
+  UPCOMING FEATURES
+---------------------------------------------------------
+
+1. WEB-BASED FIRMWARE FLASHER (HIGH PRIORITY)
+   -------------------------------------------
+   - Flash firmware (.bin) directly from the SATAN web page
+   - Uses WebSerial API + ESP32 bootloader protocol
+   - No need for PlatformIO, Arduino IDE, or esptool
+   - Drag-and-drop .bin file upload
+   - Progress bar with real-time flash status
+   - Partition table selection (single app, OTA, huge_app)
+   - Auto-detect ESP32 chip variant (ESP32, ESP32-S2, S3, C3)
+   
+   BACKEND REQUIREMENT:
+   - Will need a lightweight backend (Node.js / Express)
+     to serve firmware binaries, manage versioning, and
+     handle OTA manifest files
+   - Possible deployment on Render / Railway for the backend
+   - Frontend stays on Vercel (SPA)
+   - API endpoints needed:
+     * GET  /api/firmware/list       — list available firmwares
+     * GET  /api/firmware/:id/download — download .bin
+     * POST /api/firmware/upload     — upload new firmware (admin)
+     * GET  /api/firmware/:id/manifest — OTA manifest JSON
+
+2. UNIVERSAL DEVICE SUPPORT
+   ------------------------
+   - SATAN is designed to work with ALL ESP32-based devices,
+     not just TetraX
+   - Supported devices (planned):
+     * TetraX         — Compact cyber pen testing tool
+     * Blue-Box       — Defensive portable cybersecurity system
+     * BruceForce     — Offensive/defensive wireless security device
+     * Aqua Nexus Pro — Environmental monitoring system
+     * Any custom ESP32 project with serial output
+   - Auto-detect device type from serial handshake
+   - Device-specific UI panels loaded dynamically
+   - Device profiles stored in JSON config
+
+3. OTA (OVER-THE-AIR) UPDATES
+   ---------------------------
+   - Push firmware updates to ESP32 devices over WiFi
+   - SATAN dashboard triggers OTA from the web
+   - Version checking and rollback support
+   - Delta updates for faster flashing
+   - Requires backend for firmware hosting
+
+4. DEVICE PROFILES & CONFIGURATION
+   --------------------------------
+   - Save and load device-specific settings
+   - Pin configuration editor
+   - WiFi credential manager
+   - IR remote brand profiles per device
+   - Export/import device config as JSON
+
+5. SERIAL DATA EXPORT & ANALYSIS
+   ------------------------------
+   - Export serial logs as .txt, .csv, or .json
+   - Log filtering and search
+   - Graphing serial data (analog reads, sensor values)
+   - Session recording and playback
+
+6. MULTI-DEVICE DASHBOARD
+   -----------------------
+   - Connect to multiple ESP32 devices simultaneously
+   - Split-screen serial monitors
+   - Device fleet management view
+   - Broadcast commands to all connected devices
+
+7. AUTHENTICATION & USER ACCOUNTS
+   --------------------------------
+   - Login system for firmware upload access
+   - Role-based access (admin, developer, viewer)
+   - API key management for programmatic access
+   - Required when backend is added
+
+8. MOBILE RESPONSIVE UI
+   ---------------------
+   - Full touch-friendly mobile layout
+   - PWA (Progressive Web App) support
+   - Install as app on phone/tablet
+   - Touch-optimized D-pad and controls
+
+---------------------------------------------------------
+  BACKEND ARCHITECTURE (FUTURE)
+---------------------------------------------------------
+
+When firmware flashing and OTA features are added, the
+architecture will evolve from:
+
+  CURRENT:  Vercel (static SPA) <--WebSerial--> ESP32
+
+  FUTURE:   Vercel (SPA frontend)
+               |
+               v
+            Railway/Render (Node.js API backend)
+               |
+               v
+            Database (firmware storage, user accounts)
+               |
+               v
+            ESP32 devices (WebSerial + OTA)
+
+Backend stack (planned):
+  - Runtime:    Node.js + Express
+  - Database:   PostgreSQL or SQLite
+  - Storage:    S3-compatible (firmware .bin files)
+  - Auth:       JWT tokens
+  - Hosting:    Railway or Render (free tier to start)
+
+---------------------------------------------------------
+  TIMELINE
+---------------------------------------------------------
+
+  v1.0.0  [CURRENT]  — Core serial monitor, OLED mirror,
+                        IR tools, device control
+  v1.1.0  [PLANNED]  — Web firmware flasher (WebSerial)
+  v1.2.0  [PLANNED]  — Universal device profiles
+  v1.3.0  [PLANNED]  — OTA update support (needs backend)
+  v1.4.0  [PLANNED]  — Multi-device dashboard
+  v2.0.0  [PLANNED]  — Full backend + auth + firmware hosting
+
+---------------------------------------------------------
+  NOTES
+---------------------------------------------------------
+
+- WebSerial API only works in Chromium browsers (Chrome, Edge, Opera)
+- Firefox and Safari do NOT support WebSerial
+- Backend will be added only when firmware flashing feature
+  is implemented — no need for it before that
+- SATAN will always remain open-source (MIT License)
+
+=========================================================
