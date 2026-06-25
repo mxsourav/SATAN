@@ -1,0 +1,332 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+/* Custom Base styles */
+body {
+  background-color: #000000;
+  background-image: 
+    radial-gradient(circle at 50% 30%, #0d0d12 0%, #000000 100%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  color: #f4f4f5; /* text-zinc-100 */
+  font-family: var(--font-sans);
+  margin: 0;
+  padding: 16px;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* Custom Hardware Aesthetic Panels - Updated to Sleek Interface */
+.panel-hardware {
+  background-color: rgba(24, 24, 27, 0.4); /* bg-zinc-900/40 */
+  border: 1px solid #27272a; /* border-zinc-800 */
+  border-radius: 12px; /* rounded-xl */
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.8),
+    0 1px 2px rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(12px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Slick recessed well to align with Sleek theme's dark inputs */
+.recessed-well {
+  background-color: rgba(9, 9, 11, 0.85); /* deep black-zinc */
+  border: 1px solid #18181b; /* border-zinc-900 */
+  border-radius: 8px; /* rounded-lg */
+  box-shadow: 
+    inset 0 3px 10px rgba(0, 0, 0, 0.9),
+    inset 0 0 2px rgba(255, 255, 255, 0.03);
+}
+
+/* Physical flat but premium buttons - Updated to zinc rounded design */
+.btn-physical {
+  background: #18181b; /* bg-zinc-900 */
+  border: 1px solid #27272a; /* border-zinc-800 */
+  border-radius: 12px; /* rounded-xl */
+  color: #f4f4f5; /* text-zinc-100 */
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.btn-physical:hover {
+  background: #27272a; /* bg-zinc-800 */
+  border-color: #3f3f46; /* border-zinc-700 */
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+}
+
+.btn-physical:active {
+  background: #09090b; /* bg-zinc-950 */
+  border-color: #18181b; /* border-zinc-900 */
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8);
+  transform: translateY(1px);
+}
+
+/* D-Pad key style matching sleek zinc button shapes */
+.dpad-key {
+  background: #18181b; /* bg-zinc-900 */
+  border: 1.5px solid #27272a; /* border-zinc-800 */
+  border-radius: 10px; /* rounded-lg */
+  color: #a1a1aa; /* text-zinc-400 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  transition: all 0.2s ease;
+}
+
+.dpad-key:hover {
+  background: #27272a; /* bg-zinc-800 */
+  border-color: #3f3f46; /* border-zinc-700 */
+  color: #f4f4f5;
+}
+
+.dpad-key:active {
+  background: #09090b; /* bg-zinc-950 */
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.8);
+  transform: scale(0.96) translateY(0.5px);
+}
+
+/* Premium Physical Hardware Key styling */
+.hardware-key {
+  background: linear-gradient(180deg, #161619 0%, #0e0e10 100%);
+  border: 1px solid #27272b;
+  border-bottom: 2px solid #060608;
+  border-right: 1.5px solid #060608;
+  box-shadow: 
+    0 4px 10px rgba(0, 0, 0, 0.85),
+    inset 0 1px 0px rgba(255, 255, 255, 0.08),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.7);
+  transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+}
+
+.hardware-key:hover {
+  background: linear-gradient(180deg, #202024 0%, #121215 100%);
+  border-color: #3f3f46;
+  filter: brightness(1.1);
+  box-shadow: 
+    0 5px 12px rgba(0, 0, 0, 0.9),
+    inset 0 1px 0px rgba(255, 255, 255, 0.12),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.hardware-key:active {
+  transform: translateY(1.5px);
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.9),
+    inset 0 2px 5px rgba(0, 0, 0, 0.95);
+  background: #09090b;
+}
+
+/* Scanlines and Glass reflection for OLED screen */
+.screen-glass {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 40%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.02) 100%);
+  pointer-events: none;
+  z-index: 20;
+}
+
+.screen-scanlines {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.3) 0px, rgba(0, 0, 0, 0.3) 1px, transparent 1.5px, transparent 3px);
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0.65;
+}
+
+/* Dynamic glow engine */
+.glow-text {
+  color: var(--display-color, #00ffff);
+  text-shadow: 
+    0 0 2px var(--display-color, #00ffff),
+    0 0 6px rgba(var(--display-color-rgb, 0, 255, 255), 0.5),
+    0 0 12px rgba(var(--display-color-rgb, 0, 255, 255), 0.2);
+}
+
+.glow-bg {
+  background-color: var(--display-color, #00ffff);
+  box-shadow: 
+    0 0 4px var(--display-color, #00ffff),
+    0 0 10px rgba(var(--display-color-rgb, 0, 255, 255), 0.6);
+}
+
+.glow-border {
+  border-color: var(--display-color, #00ffff);
+  box-shadow: 
+    inset 0 0 4px rgba(var(--display-color-rgb, 0, 255, 255), 0.2),
+    0 0 6px rgba(var(--display-color-rgb, 0, 255, 255), 0.3);
+}
+
+/* Custom Slider styling */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  background: #181818;
+  height: 6px;
+  border-radius: 3px;
+  border: 1px solid #282828;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -4px;
+  background-color: var(--display-color, #00ffff);
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--display-color, #00ffff);
+  transition: transform 0.1s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* Toggle Switch styling */
+.toggle-dot {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+input:checked ~ .toggle-dot {
+  transform: translateX(100%);
+}
+
+/* Scrollbar styles for the terminal */
+.terminal-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.terminal-scrollbar::-webkit-scrollbar-track {
+  background: #060606;
+}
+.terminal-scrollbar::-webkit-scrollbar-thumb {
+  background: #222;
+  border-radius: 4px;
+}
+.terminal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #333;
+}
+
+/* Cyberdeck specific scrollbar */
+.cyberdeck-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.cyberdeck-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+}
+.cyberdeck-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(82, 82, 91, 0.5);
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+.cyberdeck-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(161, 161, 170, 0.8);
+}
+.cyberdeck-scrollbar::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* New OLED Effects */
+.oled-container {
+    position: relative;
+    overflow: hidden;
+    background-color: #000;
+}
+
+.oled-canvas {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+
+.oled-crt-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.25) 50%
+    );
+    background-size: 100% 4px;
+    box-shadow: inset 0 0 40px rgba(0,0,0,1);
+    animation: scanline 10s linear infinite;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 30;
+}
+
+@keyframes scanline {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 400px; }
+}
+
+/* Physical Depth Buttons for Navigation */
+.tactile-btn {
+    position: relative;
+    background: linear-gradient(180deg, #18181b 0%, #09090b 100%);
+    border: 1px solid #27272a;
+    border-bottom: 2px solid #000000;
+    border-radius: 0.5rem;
+    box-shadow: 
+        0 4px 6px rgba(0, 0, 0, 0.8),
+        inset 0 1px 1px rgba(255, 255, 255, 0.05);
+    transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+.tactile-btn:hover {
+    background: linear-gradient(180deg, #27272a 0%, #18181b 100%);
+    border-color: #3f3f46;
+}
+
+.tactile-btn:active, .tactile-btn.is-pressed {
+    transform: translateY(2px);
+    border-bottom-width: 1px;
+    box-shadow: 
+        0 1px 2px rgba(0, 0, 0, 0.9),
+        inset 0 2px 4px rgba(0, 0, 0, 0.8);
+    background: #09090b;
+}
+
+/* Color Wheel Picker Conic Gradient */
+.color-wheel-conic {
+    background: conic-gradient(from 90deg, red, #ff00ff, blue, #00ffff, lime, yellow, red);
+}

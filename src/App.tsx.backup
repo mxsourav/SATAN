@@ -1,0 +1,850 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  Wifi, 
+  WifiOff, 
+  RotateCw, 
+  Trash2, 
+  Pause, 
+  Play, 
+  ChevronUp, 
+  ChevronDown, 
+  ChevronLeft, 
+  ChevronRight, 
+  Sun, 
+  Activity, 
+  Zap, 
+  Tv, 
+  RefreshCw,
+  Link,
+  Unlink
+} from 'lucide-react';
+
+import { useWebSerial } from './useWebSerial';
+
+// Color Preset Themes
+const COLOR_PRESETS = [
+  { name: 'cyan', hex: '#00ffff', rgb: '0, 255, 255' },
+  { name: 'green', hex: '#10b981', rgb: '16, 185, 129' },
+  { name: 'yellow', hex: '#f59e0b', rgb: '245, 158, 11' },
+  { name: 'white', hex: '#ffffff', rgb: '255, 255, 255' },
+  { name: 'red', hex: '#ef4444', rgb: '239, 68, 68' },
+  { name: 'purple', hex: '#8b5cf6', rgb: '139, 92, 246' },
+];
+
+interface LogLine {
+  time: string;
+  tag: string;
+  text: string;
+  color: string;
+  bold?: boolean;
+}
+
+export default function App() {
+  const oledCanvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Web Serial Integration
+  const { 
+    status, 
+    logs, 
+    uptimeSeconds, 
+    ipAddress, 
+    activeMode,
+    setActiveMode,
+    isTransmitting,
+    isReceiving,
+    clearLogs,
+    connect, 
+    disconnect, 
+    sendBtn,
+    sendMacro
+  } = useWebSerial(oledCanvasRef);
+
+  // Settings Toggles
+  const [showTimestamps, setShowTimestamps] = useState(true);
+  const [invertDisplay, setInvertDisplay] = useState(false);
+  const [gridOnGraph, setGridOnGraph] = useState(true);
+  const [showFooter, setShowFooter] = useState(true);
+  const [imageError, setImageError] = useState(false);
+  
+  const [displayColor, setDisplayColor] = useState('#00ffff');
+  const [displayColorRgb, setDisplayColorRgb] = useState('0, 255, 255');
+  const [brightness, setBrightness] = useState(80);
+  const [logLevel, setLogLevel] = useState<'INFO' | 'DEBUG' | 'WARN' | 'ERROR'>('INFO');
+  const [isLogsPaused, setIsLogsPaused] = useState(false);
+  const terminalEndRef = useRef<HTMLDivElement>(null);
+
+  const [colorWheelCursor, setColorWheelCursor] = useState({ x: 14, y: 72 });
+  const [isDraggingColor, setIsDraggingColor] = useState(false);
+  const colorWheelRef = useRef<HTMLDivElement>(null);
+
+  // Formats uptime seconds to HH:MM:SS
+  const formatUptime = (totalSeconds: number) => {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  // Autoscroll logs terminal
+  useEffect(() => {
+    terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [logs]);
+
+  // Color Calculation Helper: HSL to Hex
+  const hslToHex = (h: number, s: number, l: number) => {
+    l /= 100;
+    const a = s * Math.min(l, 1 - l) / 100;
+    const f = (n: number) => {
+      const k = (n + h / 30) % 12;
+      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * color).toString(16).padStart(2, '0');
+    };
+    return `#${f(0)}${f(8)}${f(4)}`;
+  };
+
+  // Helper: Hex to RGB string for custom theme
+  const hexToRgbString = (hex: string) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    if (result) {
+      return `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`;
+    }
+    return '0, 255, 255';
+  };
+
+  // Handles clicking/dragging on Color Wheel to choose custom hue
+  const handleColorWheelSelect = (clientX: number, clientY: number) => {
+    if (!colorWheelRef.current) return;
+    const rect = colorWheelRef.current.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const centerX = width / 2;
+    const centerY = height / 2;
+    
+    const clickX = clientX - rect.left;
+    const clickY = clientY - rect.top;
+    
+    const dx = clickX - centerX;
+    const dy = clickY - centerY;
+    
+    // Calculate polar coordinates
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const maxRadius = centerX;
+    
+    // Clamp to boundaries
+    const angleRad = Math.atan2(dy, dx);
+    const clampedDistance = Math.min(distance, maxRadius);
+    
+    // Set visual cursor position
+    const cursorX = centerX + Math.cos(angleRad) * clampedDistance;
+    const cursorY = centerY + Math.sin(angleRad) * clampedDistance;
+    setColorWheelCursor({ x: cursorX, y: cursorY });
+
+    // Compute HSL
+    const angleDeg = (angleRad * (180 / Math.PI) + 360) % 360;
+    const saturation = (clampedDistance / maxRadius) * 100;
+    const hex = hslToHex(angleDeg, saturation, 50);
+    
+    setDisplayColor(hex);
+    setDisplayColorRgb(hexToRgbString(hex));
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDraggingColor(true);
+    handleColorWheelSelect(e.clientX, e.clientY);
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isDraggingColor) {
+        handleColorWheelSelect(e.clientX, e.clientY);
+      }
+    };
+    const handleMouseUp = () => {
+      setIsDraggingColor(false);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDraggingColor]);
+
+  // Preset Select handler
+  const handlePresetSelect = (hex: string, rgb: string) => {
+    setDisplayColor(hex);
+    setDisplayColorRgb(rgb);
+    
+    // Position color wheel cursor matching presets (scaled coordinates on 144px wheel)
+    if (!colorWheelRef.current) return;
+    const centerX = 72;
+    const centerY = 72;
+    let angleDeg = 0;
+    let dist = 58;
+
+    switch (hex) {
+      case '#00ffff': angleDeg = 180; break; // Cyan
+      case '#10b981': angleDeg = 120; break; // Green
+      case '#f59e0b': angleDeg = 60; break;  // Yellow
+      case '#ffffff': dist = 0; break;       // White (center)
+      case '#ef4444': angleDeg = 0; break;   // Red
+      case '#8b5cf6': angleDeg = 280; break; // Purple
+    }
+
+    const angleRad = angleDeg * (Math.PI / 180);
+    setColorWheelCursor({
+      x: centerX + Math.cos(angleRad) * dist,
+      y: centerY + Math.sin(angleRad) * dist
+    });
+  };
+
+  // Action Button Handlers
+  const handleConnect = () => {
+    connect();
+  };
+
+  const handleDisconnect = () => {
+    disconnect();
+  };
+
+  const handleReboot = () => {
+    sendBtn('AUX', true); // Maybe AUX is used for something. Firmware might reset on DTR.
+  };
+
+  // D-Pad navigation trigger actions on OLED
+  const handleDpadPress = (direction: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'OK') => {
+    if (status !== 'CONNECTED') return;
+    sendBtn(direction, true);
+    // Auto-release after a short delay since it's an onClick right now
+    setTimeout(() => {
+      sendBtn(direction, false);
+    }, 150);
+  };
+
+
+
+  // Render hardware LED based on connectivity
+  const ledColor = status === 'CONNECTED' ? '#10b981' : (status === 'REBOOTING' ? '#ef4444' : '#ef4444');
+
+  return (
+    <div 
+      className="flex-1 flex flex-col h-full max-w-7xl mx-auto w-full select-none"
+      style={{
+        '--display-color': displayColor,
+        '--display-color-rgb': displayColorRgb,
+      } as React.CSSProperties}
+    >
+      {/* HEADER SECTION */}
+      <header className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4 shrink-0 relative w-full">
+        <div className="flex items-center gap-3.5 mr-auto">
+          <div className="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.6)] border border-indigo-400/30">
+            <Wifi className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-bold font-sans tracking-tight uppercase text-zinc-100">
+                BWifiKill
+              </h1>
+              <span className="text-[10px] font-mono border border-zinc-800 font-bold bg-zinc-900 text-zinc-300 rounded px-1.5 py-0.5">
+                V4.0
+              </span>
+            </div>
+            <div className="text-xs text-zinc-500 font-mono tracking-wider uppercase font-semibold mt-0.5">
+              ESP32 Cyberdeck Controller
+            </div>
+          </div>
+        </div>
+
+        {/* ESP32 Real-time Stats Panel */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden lg:flex gap-6 panel-hardware px-5 py-2.5 items-center bg-black/40">
+          <div className="flex flex-col">
+            <span className="text-[9px] text-zinc-500 tracking-wider font-mono font-bold mb-0.5">ESP32 STATUS</span>
+            <div className="flex items-center gap-2">
+              <div 
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  status === 'CONNECTED' ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 
+                  status === 'DISCONNECTED' ? 'bg-red-500 shadow-[0_0_8px_#ef4444]' : 'bg-amber-500 animate-pulse'
+                }`}
+              />
+              <span className="text-xs font-mono font-semibold text-zinc-200">{status}</span>
+            </div>
+          </div>
+          <div className="h-6 w-[1px] bg-zinc-800/80" />
+          <div className="flex flex-col">
+            <span className="text-[9px] text-zinc-500 tracking-wider font-mono font-bold mb-0.5">IP ADDRESS</span>
+            <span className="text-xs font-mono text-zinc-300">{ipAddress || '192.168.4.1'}</span>
+          </div>
+          <div className="h-6 w-[1px] bg-zinc-800/80" />
+          <div className="flex flex-col">
+            <span className="text-[9px] text-zinc-500 tracking-wider font-mono font-bold mb-0.5">UPTIME</span>
+            <span className="text-xs font-mono text-zinc-300 transition-all tabular-nums">{formatUptime(uptimeSeconds)}</span>
+          </div>
+        </div>
+
+        {/* Realistic Transmit and Receive Diode Status - Rectangular */}
+        <div className="flex gap-3 h-[52px] shrink-0 ml-auto">
+          {/* Red LED Diode for Transmitter */}
+          <div className="panel-hardware flex flex-row items-center justify-between px-4 py-2 relative bg-black/30 gap-4 min-w-[140px]">
+            <span className="text-[10px] font-mono font-bold text-zinc-500 tracking-wider">IR TX</span>
+            <div className="relative flex items-center justify-center">
+              
+              {/* SVG 3D Red Diode */}
+              <svg className="w-8 h-8 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] rotate-90" viewBox="0 0 40 40">
+                {/* Metal legs */}
+                <line x1="16" y1="24" x2="16" y2="38" stroke="#555" strokeWidth="1.5" />
+                <line x1="24" y1="24" x2="24" y2="35" stroke="#444" strokeWidth="1.5" />
+                {/* Base spacer plate */}
+                <ellipse cx="20" cy="24" rx="7" ry="1.5" fill="#333" />
+                {/* LED glass body */}
+                <path d="M13,24 L13,15 A7,7 0 0,1 27,15 L27,24 Z" fill="url(#redLedGradient)" />
+                {/* Cathode inside */}
+                <path d="M15,20 L18,17 L18,22" stroke="#d4d4d8" strokeWidth="1" fill="none" opacity="0.6" />
+                <path d="M25,21 L22,18 L22,23" stroke="#94a3b8" strokeWidth="1.5" fill="none" opacity="0.8" />
+                
+                <defs>
+                  <linearGradient id="redLedGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#991b1b" />
+                    <stop offset="30%" stopColor="#ef4444" />
+                    <stop offset="70%" stopColor="#f87171" />
+                    <stop offset="100%" stopColor="#7f1d1d" />
+                  </linearGradient>
+                </defs>
+              </svg>
+
+              {/* Transmitter active light overlay waves */}
+              {isTransmitting && status === 'CONNECTED' && (
+                <div className="absolute top-0 flex items-center justify-center pointer-events-none">
+                  {/* Glowing aura */}
+                  <div className="absolute w-6 h-6 rounded-full bg-red-500/35 blur-md animate-pulse" />
+                  {/* Signal arcs */}
+                  <div className="absolute w-10 h-10 rounded-full border border-red-500/40 animate-ping opacity-75" />
+                  <div className="absolute w-14 h-14 rounded-full border-t border-b border-red-400/20 animate-[ping_1.5s_infinite] opacity-40" />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Cyan/Blue IR Receiver Photodiode */}
+          <div className="panel-hardware flex flex-row items-center justify-between px-4 py-2 relative bg-black/30 gap-4 min-w-[140px]">
+            <span className="text-[10px] font-mono font-bold text-zinc-500 tracking-wider">IR RX</span>
+            <div className="relative flex items-center justify-center">
+              
+              {/* SVG 3D Receiver Component */}
+              <svg className="w-8 h-8 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] rotate-90" viewBox="0 0 40 40">
+                {/* Metal legs */}
+                <line x1="15" y1="26" x2="15" y2="38" stroke="#444" strokeWidth="1.5" />
+                <line x1="20" y1="26" x2="20" y2="35" stroke="#555" strokeWidth="1.5" />
+                <line x1="25" y1="26" x2="25" y2="38" stroke="#444" strokeWidth="1.5" />
+                {/* Metal shield bracket */}
+                <rect x="11" y="10" width="18" height="16" rx="1.5" fill="#2d3748" stroke="#1a202c" strokeWidth="1" />
+                {/* Internal lens dome */}
+                <circle cx="20" cy="18" r="5" fill="url(#receiverDomeGradient)" />
+                {/* Metal mesh grid */}
+                <line x1="14" y1="12" x2="14" y2="24" stroke="#4a5568" strokeWidth="1" opacity="0.5" />
+                <line x1="26" y1="12" x2="26" y2="24" stroke="#4a5568" strokeWidth="1" opacity="0.5" />
+                
+                <defs>
+                  <linearGradient id="receiverDomeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#1a365d" />
+                    <stop offset="40%" stopColor="#2b6cb0" />
+                    <stop offset="80%" stopColor="#0f172a" />
+                  </linearGradient>
+                </defs>
+              </svg>
+
+              {/* Receiver active light waves */}
+              {isReceiving && status === 'CONNECTED' && (
+                <div className="absolute top-0 flex items-center justify-center pointer-events-none">
+                  <div className="absolute w-6 h-6 rounded-full bg-cyan-500/25 blur-md" />
+                  <div className="absolute w-10 h-10 rounded-full border border-cyan-400/50 animate-ping" />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* THREE COLUMN MAIN SECTION */}
+      <main className="flex flex-col lg:flex-row gap-4 flex-1 overflow-hidden min-h-0 mb-4">
+        
+        {/* LEFT COLUMN: SERIAL LOG TERMINAL */}
+        <div id="serial-log-panel" className="lg:w-1/4 flex flex-col panel-hardware overflow-hidden bg-black/20 min-h-[300px] lg:min-h-0">
+          <div className="flex justify-between items-center border-b border-zinc-800/80 p-4 pb-2.5 shrink-0">
+            <h2 className="text-[10px] font-bold font-mono tracking-widest text-zinc-400 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-zinc-600 rounded-full animate-ping" />
+              SERIAL LOG
+            </h2>
+            <div className="flex gap-2 text-[10px] font-mono text-zinc-500">
+              <button 
+                onClick={clearLogs}
+                className="hover:text-white transition-colors bg-zinc-900 border border-zinc-800 rounded px-1.5 py-0.5 flex items-center gap-1 active:bg-black"
+                title="Clear Logs"
+              >
+                <Trash2 className="w-3 h-3" /> CLEAR
+              </button>
+              <button 
+                onClick={() => setShowTimestamps(!showTimestamps)}
+                className={`transition-colors border rounded px-1.5 py-0.5 flex items-center gap-1 active:bg-black ${
+                  showTimestamps ? 'bg-zinc-900 border-zinc-800 hover:text-white' : 'bg-zinc-800/50 border-zinc-700 text-zinc-500'
+                }`}
+                title="Toggle Timestamps"
+              >
+                TIME
+              </button>
+              <button 
+                onClick={() => setIsLogsPaused(p => !p)}
+                className={`transition-colors border rounded px-1.5 py-0.5 flex items-center gap-1 active:bg-black ${
+                  isLogsPaused ? 'bg-amber-950/40 border-amber-800 text-amber-400' : 'bg-zinc-900 border-zinc-800 hover:text-white'
+                }`}
+                title={isLogsPaused ? 'Resume Logging' : 'Pause Logging'}
+              >
+                {isLogsPaused ? <Play className="w-3 h-3 text-amber-400" /> : <Pause className="w-3 h-3" />} 
+                {isLogsPaused ? 'RESUME' : 'PAUSE'}
+              </button>
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto min-h-0 p-4 pt-0 font-mono text-[11px] leading-[1.6] select-text cyberdeck-scrollbar">
+            {logs.map((log, i) => (
+              <div key={i} className="mb-1 break-all">
+                {showTimestamps && <span className="text-zinc-600 mr-2 select-none">{log.time}</span>}
+                <span className={`${log.color} ${log.bold ? 'font-bold' : ''}`}>{log.tag}</span>
+                <span className="text-zinc-300 ml-1.5">{log.text}</span>
+              </div>
+            ))}
+            <div ref={terminalEndRef} />
+          </div>
+
+          {/* Log Settings Dropdown */}
+          <div className="mt-2.5 pt-2 border-t border-zinc-800/80 flex justify-between items-center shrink-0">
+            <span className="text-[10px] font-mono font-bold text-zinc-500">DIAG LEVEL</span>
+            <select 
+              value={logLevel} 
+              onChange={(e) => setLogLevel(e.target.value as any)}
+              className="bg-zinc-900 border border-zinc-800 text-xs font-mono font-medium text-zinc-300 rounded-md px-2.5 py-1 focus:ring-1 focus:ring-zinc-700 focus:outline-none transition-all cursor-pointer"
+            >
+              <option value="INFO">INFO</option>
+              <option value="DEBUG">DEBUG</option>
+              <option value="WARN">WARN</option>
+              <option value="ERROR">ERROR</option>
+            </select>
+          </div>
+        </div>
+
+        {/* CENTER COLUMN: HIGH-FIDELITY OLED BOARD */}
+        <div className="flex-1 flex justify-center items-center p-2 lg:p-4 panel-hardware bg-black/40 min-h-[350px] lg:min-h-0 relative">
+          
+          {/* Main PCB layout card - uses real oled.png as background */}
+          <div className="relative w-full max-w-[1200px] max-h-full aspect-square flex flex-col items-center justify-center select-none shadow-2xl">
+            
+            {/* The Raw OLED device module background */}
+            <img 
+              src="/oled.png" 
+              alt="OLED PCB Board" 
+              className={`w-full h-full object-contain pointer-events-none drop-shadow-[0_15px_30px_rgba(0,0,0,0.9)] ${imageError ? 'hidden' : 'block'}`}
+              referrerPolicy="no-referrer"
+              onError={() => setImageError(true)}
+            />
+
+            {/* HIGH-FIDELITY CSS FALLBACK (Shown only if oled.png is missing) */}
+            {imageError && (
+              <div 
+                id="pcb-fallback-container"
+                className="absolute inset-0 rounded-2xl border-2 border-zinc-800 bg-[#0e0e0e] flex flex-col items-center justify-center p-8 shadow-2xl"
+              >
+                {/* Gold corners */}
+                <div className="absolute top-4 left-4 w-6 h-6 rounded-full border-[5px] border-[#c5a059] bg-[#050505] shadow-inner" />
+                <div className="absolute top-4 right-4 w-6 h-6 rounded-full border-[5px] border-[#c5a059] bg-[#050505] shadow-inner" />
+                <div className="absolute bottom-4 left-4 w-6 h-6 rounded-full border-[5px] border-[#c5a059] bg-[#050505] shadow-inner" />
+                <div className="absolute bottom-4 right-4 w-6 h-6 rounded-full border-[5px] border-[#c5a059] bg-[#050505] shadow-inner" />
+                
+                {/* Header block */}
+                <div className="absolute top-4 border border-zinc-700/60 p-1 px-3 rounded-md bg-[#050505] flex gap-2">
+                  <div className="w-2 h-2 rounded-full bg-amber-500 border border-amber-300" />
+                  <div className="w-2 h-2 rounded-full bg-amber-500 border border-amber-300" />
+                  <div className="w-2 h-2 rounded-full bg-amber-500 border border-amber-300" />
+                  <div className="w-2 h-2 rounded-full bg-amber-500 border border-amber-300" />
+                </div>
+                <div className="absolute top-11 text-[9px] font-mono text-zinc-500 flex gap-2">
+                  <span>VCC</span><span>GND</span><span>SCL</span><span>SDA</span>
+                </div>
+                
+                {/* Screen Bezel fallback */}
+                <div className="w-[82%] aspect-[1.8] rounded-xl border-[4px] border-zinc-900 bg-black flex items-center justify-center p-3 relative shadow-2xl" />
+
+                {/* Ribbon cable */}
+                <div className="absolute bottom-4 w-32 h-14 bg-gradient-to-b from-zinc-900 to-black border border-zinc-800 rounded-b-md flex justify-center items-end pb-1 shadow-inner">
+                  <div className="w-24 h-1.5 bg-[#c5a059]/40 rounded-sm flex justify-around px-1">
+                    {Array.from({ length: 8 }).map((_, i) => (
+                      <div key={i} className="w-[2px] h-full bg-[#c5a059]/80" />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* DYNAMIC SCREEN OVERLAY */}
+            <div 
+              id="oled-screen-layer"
+              className="absolute z-10 overflow-hidden select-none transition-all duration-300 flex items-center justify-center"
+              style={{
+                left: '18.5%',
+                top: '32.5%',
+                width: '63%',
+                height: '31%',
+                backgroundColor: invertDisplay ? displayColor : '#040508',
+                filter: `brightness(${brightness}%)`,
+              }}
+            >
+              {/* Real Mirror Canvas */}
+              <canvas 
+                ref={oledCanvasRef}
+                width={128}
+                height={64}
+                className="w-full h-full"
+                style={{ 
+                  imageRendering: 'pixelated',
+                  mixBlendMode: invertDisplay ? 'difference' : 'screen', 
+                  opacity: 0.95,
+                  filter: invertDisplay ? 'invert(1)' : 'none'
+                }}
+              />
+              
+              {/* Tint Layer */}
+              {!invertDisplay && (
+                <div 
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    backgroundColor: displayColor,
+                    mixBlendMode: 'multiply'
+                  }}
+                />
+              )}
+
+              {/* Pixel grid overlay */}
+              <div 
+                className="absolute inset-0 pointer-events-none opacity-[0.25]"
+                style={{
+                  backgroundImage: 'linear-gradient(to right, rgba(0,0,0,0.85) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.85) 1px, transparent 1px)',
+                  backgroundSize: '0.78125% 1.5625%'
+                }}
+              />
+
+              {/* Scanline overlay */}
+              <div 
+                className="absolute inset-0 pointer-events-none opacity-[0.15]"
+                style={{
+                  backgroundImage: 'linear-gradient(transparent 50%, rgba(0,0,0,0.7) 50%)',
+                  backgroundSize: '100% 3.125%'
+                }}
+              />
+            </div>
+
+            {/* Corner labels matching the physical OLED */}
+            <div className="absolute bottom-[20.5%] left-[13%] text-[8px] text-zinc-500 font-mono tracking-wide">A0K1</div>
+            <div className="absolute bottom-[20.5%] right-[13%] text-[8px] text-zinc-500 font-mono tracking-wide">1104</div>
+
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: HARDWARE CONTROLS */}
+        <div className="lg:w-1/4 flex flex-col gap-4">
+
+          {/* OLED COLOR PICKER PANEL */}
+          <div className="panel-hardware p-4 flex-1 flex flex-col justify-between bg-black/10">
+            <div className="flex justify-between items-center mb-3 shrink-0">
+              <h2 className="text-[10px] font-mono font-bold tracking-widest text-zinc-400 flex items-center gap-1.5">
+                OLED COLOR
+              </h2>
+              <button 
+                className="w-8 h-8 rounded-full bg-black/40 hover:bg-red-500/20 text-zinc-500 hover:text-red-400 flex items-center justify-center transition-colors border border-zinc-800 hover:border-red-500/50"
+                title="Force Reboot ESP32"
+                onClick={() => {
+                  if (window.confirm("Are you sure you want to force reboot the ESP32?")) {
+                    sendMacro("CMD_REBOOT_DEVICE");
+                  }
+                }}
+              >
+                <RotateCw className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Interactive Color Wheel Section */}
+            <div className="flex items-center gap-4 py-2 flex-1 justify-center lg:justify-between">
+              {/* Custom Canvas Color Wheel */}
+              <div 
+                ref={colorWheelRef}
+                onMouseDown={handleMouseDown}
+                className="w-36 h-36 rounded-full relative cursor-crosshair select-none shadow-[inset_0_3px_10px_rgba(0,0,0,0.85),0_4px_12px_rgba(0,0,0,0.5)] border-2 border-zinc-950 shrink-0"
+                style={{
+                  background: 'conic-gradient(red, #ff00ff, blue, #00ffff, lime, yellow, red)',
+                }}
+              >
+                {/* White radial center overlay */}
+                <div 
+                  className="absolute inset-0 rounded-full"
+                  style={{
+                    background: 'radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.15) 55%, transparent 85%)'
+                  }}
+                />
+
+                {/* Target cursor indicator */}
+                <div 
+                  className="absolute w-3.5 h-3.5 rounded-full bg-white border border-zinc-950 shadow-lg pointer-events-none -translate-x-1.75 -translate-y-1.75 transition-all duration-75"
+                  style={{
+                    left: `${colorWheelCursor.x}px`,
+                    top: `${colorWheelCursor.y}px`
+                  }}
+                />
+              </div>
+
+              {/* Selected Color Readout */}
+              <div className="flex flex-col gap-2 shrink-0">
+                <div 
+                  className="h-9 w-14 rounded border border-zinc-950 transition-all duration-300 shadow-md"
+                  style={{
+                    backgroundColor: displayColor,
+                    boxShadow: `0 0 10px rgba(${displayColorRgb}, 0.5)`
+                  }}
+                />
+                <div className="text-[10px] font-mono text-zinc-400 font-medium leading-relaxed bg-zinc-950/80 p-1.5 border border-zinc-900 rounded select-text">
+                  R: {displayColorRgb.split(',')[0]}<br />
+                  G: {displayColorRgb.split(',')[1]}<br />
+                  B: {displayColorRgb.split(',')[2]}
+                </div>
+              </div>
+            </div>
+
+            {/* Color Swatch presets */}
+            <div className="flex justify-between px-1.5 py-3 shrink-0">
+              {COLOR_PRESETS.map((preset) => (
+                <button
+                  key={preset.name}
+                  onClick={() => handlePresetSelect(preset.hex, preset.rgb)}
+                  className={`w-4 h-4 rounded-full transition-all duration-200 cursor-pointer ${
+                    displayColor === preset.hex 
+                      ? 'ring-2 ring-white ring-offset-2 ring-offset-zinc-900 scale-125' 
+                      : 'hover:scale-110'
+                  }`}
+                  style={{
+                    backgroundColor: preset.hex,
+                    boxShadow: displayColor === preset.hex ? `0 0 8px ${preset.hex}` : 'none'
+                  }}
+                  title={`Preset ${preset.name}`}
+                />
+              ))}
+            </div>
+
+            {/* BRIGHTNESS SLIDER */}
+            <div className="mb-4 shrink-0">
+              <div className="flex justify-between items-center mb-1.5">
+                <span className="text-[9px] font-mono font-bold text-zinc-500 tracking-wider">BRIGHTNESS</span>
+                <Sun className="w-3.5 h-3.5 text-zinc-400 glow-text" />
+              </div>
+              <div className="flex items-center gap-3">
+                <input 
+                  type="range" 
+                  min="20" 
+                  max="100" 
+                  value={brightness}
+                  onChange={(e) => setBrightness(parseInt(e.target.value))}
+                  className="flex-1"
+                />
+                <span className="text-xs font-mono text-zinc-400 w-8 text-right tabular-nums">{brightness}%</span>
+              </div>
+            </div>
+
+            {/* DISPLAY SETTINGS TOGGLES */}
+            <div className="space-y-3 pt-2 border-t border-zinc-800/80 shrink-0">
+              <h3 className="text-[9px] font-mono font-bold tracking-widest text-zinc-500">DISPLAY SETTINGS</h3>
+              
+              {/* Invert Toggle */}
+              <div className="flex flex-col items-center">
+                <button 
+                  onPointerDown={() => sendBtn('BACK', true)}
+                  onPointerUp={() => sendBtn('BACK', false)}
+                  onPointerLeave={() => sendBtn('BACK', false)}
+                  className="w-12 h-12 rounded-full bg-zinc-800 border-b-4 border-zinc-900 shadow-xl active:translate-y-1 active:border-b-0 mb-2 transition-all relative overflow-hidden group flex items-center justify-center"
+                >
+                  <input 
+                    type="checkbox" 
+                    checked={invertDisplay}
+                    onChange={(e) => setInvertDisplay(e.target.checked)}
+                    className="sr-only"
+                  />
+                  <div className={`w-9 h-5 bg-zinc-800 border border-zinc-700 rounded-full transition-all duration-200`}>
+                    <div 
+                      className={`toggle-dot absolute top-[3px] left-[3px] w-3.5 h-3.5 rounded-full transition-all duration-200 ${
+                        invertDisplay ? 'bg-zinc-950 translate-x-4' : 'bg-zinc-400'
+                      }`}
+                      style={{
+                        backgroundColor: invertDisplay ? displayColor : '#a1a1aa',
+                        boxShadow: invertDisplay ? `0 0 6px ${displayColor}` : 'none'
+                      }}
+                    />
+                  </div>
+                </button>
+              </div>
+
+              {/* Grid Toggle */}
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-zinc-300 font-medium">GRID ON GRAPH</span>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={gridOnGraph}
+                    onChange={(e) => setGridOnGraph(e.target.checked)}
+                    className="sr-only"
+                  />
+                  <div className="w-9 h-5 bg-zinc-800 border border-zinc-700 rounded-full transition-all duration-200">
+                    <div 
+                      className={`toggle-dot absolute top-[3px] left-[3px] w-3.5 h-3.5 rounded-full transition-all duration-200 ${
+                        gridOnGraph ? 'bg-zinc-950 translate-x-4' : 'bg-zinc-400'
+                      }`}
+                      style={{
+                        backgroundColor: gridOnGraph ? displayColor : '#a1a1aa',
+                        boxShadow: gridOnGraph ? `0 0 6px ${displayColor}` : 'none'
+                      }}
+                    />
+                  </div>
+                </label>
+              </div>
+
+              {/* Footer Toggle */}
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-zinc-300 font-medium">SHOW FOOTER</span>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={showFooter}
+                    onChange={(e) => setShowFooter(e.target.checked)}
+                    className="sr-only"
+                  />
+                  <div className="w-9 h-5 bg-zinc-800 border border-zinc-700 rounded-full transition-all duration-200">
+                    <div 
+                      className={`toggle-dot absolute top-[3px] left-[3px] w-3.5 h-3.5 rounded-full transition-all duration-200 ${
+                        showFooter ? 'bg-zinc-950 translate-x-4' : 'bg-zinc-400'
+                      }`}
+                      style={{
+                        backgroundColor: showFooter ? displayColor : '#a1a1aa',
+                        boxShadow: showFooter ? `0 0 6px ${displayColor}` : 'none'
+                      }}
+                    />
+                  </div>
+                </label>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </main>
+
+      {/* BOTTOM HARDWARE NAVIGATION/BUTTON RAIL */}
+      {showFooter && (
+        <footer className="mt-auto flex flex-col lg:flex-row justify-between items-stretch gap-4 shrink-0 pb-2 relative z-10 bg-[#070709] border border-zinc-900/80 rounded-2xl p-2.5 shadow-[0_15px_40px_rgba(0,0,0,0.9),inset_0_1px_2px_rgba(255,255,255,0.03)] select-none">
+          <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/20 to-transparent pointer-events-none" />
+
+          {/* Left Column: System Connection Actions */}
+          <div className="flex flex-col gap-2 justify-center w-full lg:w-[220px] shrink-0 p-1 relative z-10">
+            <button 
+              onClick={handleConnect}
+              className={`hardware-key py-2.5 px-3.5 flex items-center justify-start gap-3 rounded-lg border text-emerald-500 font-mono font-bold text-xs tracking-wider transition-all duration-300 ${
+                status === 'CONNECTED' ? 'bg-[#101a14] border-emerald-500/25 shadow-[0_0_12px_rgba(16,185,129,0.15)]' : 'border-zinc-900/50'
+              }`}
+            >
+              <Link className="w-4 h-4 text-emerald-500" />
+              <span className="tracking-wider text-[11px]">CONNECT</span>
+            </button>
+            
+            <button 
+              onClick={handleDisconnect}
+              className={`hardware-key py-2.5 px-3.5 flex items-center justify-start gap-3 rounded-lg border text-red-500 font-mono font-bold text-xs tracking-wider transition-all duration-300 ${
+                status === 'DISCONNECTED' ? 'bg-[#1e1112] border-red-500/25 shadow-[0_0_12px_rgba(239,68,68,0.15)]' : 'border-zinc-900/50'
+              }`}
+            >
+              <Unlink className="w-4 h-4 text-red-500" />
+              <span className="tracking-wider text-[11px]">DISCONNECT</span>
+            </button>
+          </div>
+
+          {/* Center Column: Interactive Navigation D-Pad */}
+          <div className="flex-1 min-h-[145px] bg-[#050506] border border-zinc-900 rounded-xl p-3 shadow-[inset_0_4px_12px_rgba(0,0,0,0.95)] relative overflow-hidden flex items-center justify-center">
+            <div className="absolute inset-0 pointer-events-none z-0 opacity-40">
+              <div className="absolute top-1/2 left-[15%] right-[15%] h-[2px] bg-zinc-800 -translate-y-1/2" />
+              <div className="absolute left-1/2 top-[15%] bottom-[15%] w-[2px] bg-zinc-800 -translate-x-1/2" />
+            </div>
+
+            <div className="w-[120px] h-[120px] relative">
+                {/* D-Pad UP */}
+                <button 
+                  onPointerDown={() => sendBtn('UP', true)}
+                  onPointerUp={() => sendBtn('UP', false)}
+                  onPointerLeave={() => sendBtn('UP', false)}
+                  className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-10 bg-zinc-800 rounded-t-md hover:bg-zinc-700 active:bg-zinc-600 border-t border-x border-zinc-700 flex justify-center items-start pt-1 shadow-inner z-10 transition-colors"
+                >
+                  <ChevronUp className="w-5 h-5 text-cyan-400" />
+                </button>
+                
+                {/* D-Pad RIGHT */}
+                <button 
+                  onPointerDown={() => sendBtn('RIGHT', true)}
+                  onPointerUp={() => sendBtn('RIGHT', false)}
+                  onPointerLeave={() => sendBtn('RIGHT', false)}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 bg-zinc-800 rounded-r-md hover:bg-zinc-700 active:bg-zinc-600 border-r border-y border-zinc-700 flex justify-end items-center pr-1 shadow-inner z-10 transition-colors"
+                >
+                  <ChevronRight className="w-5 h-5 text-cyan-400" />
+                </button>
+                
+                {/* D-Pad DOWN */}
+                <button 
+                  onPointerDown={() => sendBtn('DOWN', true)}
+                  onPointerUp={() => sendBtn('DOWN', false)}
+                  onPointerLeave={() => sendBtn('DOWN', false)}
+                  className="absolute bottom-0 left-1/2 -translate-x-1/2 w-10 h-10 bg-zinc-800 rounded-b-md hover:bg-zinc-700 active:bg-zinc-600 border-b border-x border-zinc-700 flex justify-center items-end pb-1 shadow-inner z-10 transition-colors"
+                >
+                  <ChevronDown className="w-5 h-5 text-cyan-400" />
+                </button>
+                
+                {/* D-Pad LEFT */}
+                <button 
+                  onPointerDown={() => sendBtn('LEFT', true)}
+                  onPointerUp={() => sendBtn('LEFT', false)}
+                  onPointerLeave={() => sendBtn('LEFT', false)}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 bg-zinc-800 rounded-l-md hover:bg-zinc-700 active:bg-zinc-600 border-l border-y border-zinc-700 flex justify-start items-center pl-1 shadow-inner z-10 transition-colors"
+                >
+                  <ChevronLeft className="w-5 h-5 text-cyan-400" />
+                </button>
+                
+                {/* OK Center Button */}
+                <button 
+                  onPointerDown={() => sendBtn('OK', true)}
+                  onPointerUp={() => sendBtn('OK', false)}
+                  onPointerLeave={() => sendBtn('OK', false)}
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-zinc-900 rounded-full border-2 border-zinc-950 hover:bg-black active:scale-95 shadow-inner z-20 transition-all flex items-center justify-center group"
+                >
+                  <div className="w-3 h-3 rounded-full bg-cyan-500/20 group-active:bg-cyan-400/80 transition-colors" />
+                </button>
+            </div>
+          </div>
+
+          {/* Right Column: Mode Selectors (JAMMER, RECEIVER, REMOTE) */}
+          <div className="flex flex-col gap-2 justify-center w-full lg:w-[250px] shrink-0 p-1 relative z-10">
+                <div className="absolute top-[80px] left-[7px] space-y-3">
+                  <button onClick={() => sendMacro("CMD_OPEN_IR_JAMMER")} className={`w-32 py-1.5 text-[10px] font-bold font-mono tracking-wider rounded border transition-colors ${activeMode === 'IR JAMMER' ? 'bg-[#00ffff]/10 border-[#00ffff]/50 text-[#00ffff]' : 'bg-black/50 border-zinc-800/80 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300'}`}>
+                    IR JAMMER
+                  </button>
+                  <button onClick={() => sendMacro("CMD_OPEN_IR_RECEIVER")} className={`w-32 py-1.5 text-[10px] font-bold font-mono tracking-wider rounded border transition-colors ${activeMode === 'IR RECEIVER' ? 'bg-[#00ffff]/10 border-[#00ffff]/50 text-[#00ffff]' : 'bg-black/50 border-zinc-800/80 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300'}`}>
+                    IR RX
+                  </button>
+                  <button onClick={() => sendMacro("CMD_OPEN_WIFI_SCANNER")} className={`w-32 py-1.5 text-[10px] font-bold font-mono tracking-wider rounded border transition-colors ${activeMode === 'IR REMOTE' ? 'bg-[#00ffff]/10 border-[#00ffff]/50 text-[#00ffff]' : 'bg-black/50 border-zinc-800/80 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300'}`}>
+                    WIFI SCAN
+                  </button>
+                </div>
+          </div>
+        </footer>
+      )}
+    </div>
+  );
+}

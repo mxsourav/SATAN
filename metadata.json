@@ -1,0 +1,6 @@
+{
+  "name": "BWifiKill Cyberdeck Controller",
+  "description": "Interactive cyberdeck dashboard simulating real-time IR jamming, spectrum reception, and remote controller sequences.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>BWifiKill V4.0</title>
+
+<!-- FONTS -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<!-- MAIN CSS -->
+<link rel="stylesheet" href="./style.css">
+
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <!-- ===================================================== -->
+    <!-- TOP STATUS BAR -->
+    <!-- ===================================================== -->
+
+    <header class="topbar panel">
+
+        <div class="logo-section">
+
+            <div class="wifi-logo">
+                <svg width="42" height="42" viewBox="0 0 64 64" fill="none">
+                    <path d="M12 24C25 12 39 12 52 24" stroke="#00FFFB" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M20 34C29 26 35 26 44 34" stroke="#00FFFB" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M28 44C31 41 33 41 36 44" stroke="#00FFFB" stroke-width="4" stroke-linecap="round"/>
+                    <circle cx="32" cy="51" r="3" fill="#00FFFB"/>
+                </svg>
+            </div>
+
+            <div class="brand-text">
+                <h1>BWifiKill <span>V4.0</span></h1>
+                <p>ESP32 Cyberdeck Controller</p>
+            </div>
+
+        </div>
+
+        <div class="status-group">
+
+            <div class="status-card">
+                <label>ESP32 STATUS</label>
+                <div class="status-value connected">
+                    <span class="dot"></span>
+                    CONNECTED
+                </div>
+            </div>
+
+            <div class="status-card">
+                <label>IP ADDRESS</label>
+                <div class="status-value">192.168.4.1</div>
+            </div>
+
+            <div class="status-card">
+                <label>UPTIME</label>
+                <div class="status-value">01:24:37</div>
+            </div>
+
+        </div>
+
+    </header>
+
+    <!-- ===================================================== -->
+    <!-- LEFT COLUMN -->
+    <!-- ===================================================== -->
+
+    <aside class="left-column">
+
+        <section class="panel serial-panel">
+
+            <div class="panel-header">
+                <h2>SERIAL LOG</h2>
+
+                <div class="header-actions">
+                    <button id="clearLogsBtn">CLEAR</button>
+                    <button id="pauseLogsBtn">II</button>
+                </div>
+            </div>
+
+            <div id="serialLogs" class="serial-console">
+
+                <div><span>[17:21:04]</span> <cyan>[SYSTEM]</cyan> Booting BWifiKill V4.0</div>
+                <div><span>[17:21:04]</span> <cyan>[SYSTEM]</cyan> Initializing modules...</div>
+                <div><span>[17:21:05]</span> <cyan>[IR MANAGER]</cyan> Initializing...</div>
+                <div><span>[17:21:05]</span> <cyan>[IR RX]</cyan> Disabled</div>
+                <div><span>[17:21:06]</span> <cyan>[IR TX]</cyan> Active</div>
+                <div><span>[17:21:06]</span> <cyan>[OLED FRAME]</cyan> OK</div>
+
+            </div>
+
+            <div class="log-footer">
+
+                <label>LOG LEVEL</label>
+
+                <select>
+                    <option>INFO</option>
+                    <option>DEBUG</option>
+                    <option>WARN</option>
+                    <option>ERROR</option>
+                </select>
+
+            </div>
+
+        </section>
+
+    </aside>
+
+    <!-- ===================================================== -->
+    <!-- CENTER OLED -->
+    <!-- ===================================================== -->
+
+    <main class="center-column">
+
+        <section class="oled-stage">
+
+            <!-- REAL OLED MODULE PNG -->
+            <img
+                id="oledModule"
+                class="oled-module"
+                src="./img/componentes/oled.png"
+                alt="OLED Module"
+            >
+
+            <!-- OLED SCREEN OVERLAY -->
+            <div id="oledViewport" class="oled-viewport">
+
+                <!-- REAL FRAMEBUFFER CANVAS -->
+                <canvas
+                    id="oledCanvas"
+                    width="128"
+                    height="64"
+                ></canvas>
+
+                <!-- DEMO UI -->
+                <div class="oled-demo">
+
+                    <div class="oled-header">
+                        <span>IR JAMMER</span>
+                        <span>38kHz</span>
+                    </div>
+
+                    <div class="oled-mode">
+                        TV BURST MODE
+                    </div>
+
+                    <div class="oled-graph">
+
+                        <div class="bar h20"></div>
+                        <div class="bar h26"></div>
+                        <div class="bar h32"></div>
+                        <div class="bar h48"></div>
+                        <div class="bar h40"></div>
+                        <div class="bar h30"></div>
+                        <div class="bar h20"></div>
+
+                        <div class="bar h18"></div>
+                        <div class="bar h14"></div>
+                        <div class="bar h12"></div>
+
+                        <div class="bar h24"></div>
+                        <div class="bar h40"></div>
+                        <div class="bar h52"></div>
+                        <div class="bar h46"></div>
+                        <div class="bar h34"></div>
+
+                        <div class="bar h18"></div>
+
+                        <div class="bar h16"></div>
+                        <div class="bar h14"></div>
+
+                        <div class="bar h20"></div>
+                        <div class="bar h38"></div>
+                        <div class="bar h60"></div>
+
+                    </div>
+
+                    <div class="oled-footer">
+
+                        <div>
+                            PKT: 52648
+                        </div>
+
+                        <div>
+                            D:74%
+                        </div>
+
+                        <div>
+                            RAND-OOK
+                        </div>
+
+                        <div>
+                            04:01
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- ===================================================== -->
+    <!-- RIGHT COLUMN -->
+    <!-- ===================================================== -->
+
+    <aside class="right-column">
+
+        <!-- TX RX -->
+        <div class="tx-rx-row">
+
+            <section class="panel signal-card">
+
+                <h3>IR TRANSMIT</h3>
+
+                <div class="signal-led tx-led">
+                    <div class="led-core"></div>
+                </div>
+
+            </section>
+
+            <section class="panel signal-card">
+
+                <h3>IR RECEIVE</h3>
+
+                <div class="signal-led rx-led">
+                    <div class="led-core"></div>
+                </div>
+
+            </section>
+
+        </div>
+
+        <!-- OLED COLOR -->
+        <section class="panel settings-panel">
+
+            <div class="panel-header">
+                <h2>OLED COLOR</h2>
+            </div>
+
+            <div class="color-wheel-wrap">
+
+                <div class="color-wheel"></div>
+
+                <div class="rgb-preview">
+
+                    <div class="preview-box"></div>
+
+                    <div class="rgb-values">
+                        <div>R: 0</div>
+                        <div>G: 255</div>
+                        <div>B: 251</div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="preset-colors">
+
+                <button class="preset cyan active"></button>
+                <button class="preset green"></button>
+                <button class="preset yellow"></button>
+                <button class="preset white"></button>
+                <button class="preset red"></button>
+                <button class="preset purple"></button>
+
+            </div>
+
+        </section>
+
+        <!-- BRIGHTNESS -->
+        <section class="panel settings-panel">
+
+            <div class="panel-header">
+                <h2>BRIGHTNESS</h2>
+                <span>80%</span>
+            </div>
+
+            <input
+                type="range"
+                min="0"
+                max="100"
+                value="80"
+                class="brightness-slider"
+            >
+
+        </section>
+
+        <!-- DISPLAY -->
+        <section class="panel settings-panel">
+
+            <div class="panel-header">
+                <h2>DISPLAY SETTINGS</h2>
+            </div>
+
+            <div class="toggle-row">
+                <span>INVERT DISPLAY</span>
+                <div class="toggle"></div>
+            </div>
+
+            <div class="toggle-row">
+                <span>GRID ON GRAPH</span>
+                <div class="toggle active"></div>
+            </div>
+
+            <div class="toggle-row">
+                <span>SHOW FOOTER</span>
+                <div class="toggle active"></div>
+            </div>
+
+        </section>
+
+    </aside>
+
+    <!-- ===================================================== -->
+    <!-- BOTTOM LEFT -->
+    <!-- ===================================================== -->
+
+    <section class="bottom-left">
+
+        <button class="hardware-btn connect-btn">
+            CONNECT
+        </button>
+
+        <button class="hardware-btn disconnect-btn">
+            DISCONNECT
+        </button>
+
+        <button class="hardware-btn reboot-btn">
+            REBOOT
+        </button>
+
+    </section>
+
+    <!-- ===================================================== -->
+    <!-- DPAD -->
+    <!-- ===================================================== -->
+
+    <section class="bottom-center">
+
+        <div class="dpad">
+
+            <button class="key up-key">↑</button>
+            <button class="key left-key">←</button>
+            <button class="key ok-key">OK</button>
+            <button class="key right-key">→</button>
+            <button class="key down-key">↓</button>
+
+            <button class="back-key">
+                BACK
+            </button>
+
+        </div>
+
+    </section>
+
+    <!-- ===================================================== -->
+    <!-- BOTTOM RIGHT -->
+    <!-- ===================================================== -->
+
+    <section class="bottom-right">
+
+        <button class="hardware-btn mode-btn">
+            IR JAMMER
+        </button>
+
+        <button class="hardware-btn mode-btn">
+            IR RECEIVER
+        </button>
+
+        <button class="hardware-btn mode-btn">
+            IR REMOTE
+        </button>
+
+    </section>
+
+</div>
+
+<!-- MAIN JS -->
+<script src="./script.js"></script>
+
+</body>
+</html>
