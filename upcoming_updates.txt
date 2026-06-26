@@ -3,9 +3,9 @@
   Universal Serial Monitor for ESP32 Microcontrollers
 =========================================================
 
-Version: v1.0.0 (Current)
+Version: v1.1.0 (Current)
 Author:  mxsourav
-Date:    June 26, 2026
+Date:    June 27, 2026
 
 ---------------------------------------------------------
   UPCOMING FEATURES
@@ -134,12 +134,16 @@ Backend stack (planned):
   TIMELINE
 ---------------------------------------------------------
 
-  v1.0.0  [CURRENT]  — Core serial monitor, OLED mirror,
+  v1.0.0  [RELEASED] — Core serial monitor, OLED mirror,
                         IR tools, device control
-  v1.1.0  [PLANNED]  — Web firmware flasher (WebSerial)
-  v1.2.0  [PLANNED]  — Universal device profiles
-  v1.3.0  [PLANNED]  — OTA update support (needs backend)
-  v1.4.0  [PLANNED]  — Multi-device dashboard
+  v1.1.0  [CURRENT]  — Multi-profile layout manager (tabs),
+                        mouse multi-selection mode, keyboard nudging
+                        option, layout safety spacing engine,
+                        and Figma-style snapping guides
+  v1.2.0  [PLANNED]  — Web firmware flasher (WebSerial)
+  v1.3.0  [PLANNED]  — Universal device profiles
+  v1.4.0  [PLANNED]  — OTA update support (needs backend)
+  v1.5.0  [PLANNED]  — Multi-device dashboard
   v2.0.0  [PLANNED]  — Full backend + auth + firmware hosting
 
 ---------------------------------------------------------

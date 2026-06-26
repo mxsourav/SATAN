@@ -10,7 +10,7 @@ export interface LogLine {
 
 interface UseWebSerialProps {
   canvasRef?: React.RefObject<HTMLCanvasElement | null>;
-  onLogParsed?: (log: LogLine) => void;
+  onLogParsed?: (rawLine: string) => void;
 }
 
 export function useWebSerial({ canvasRef, onLogParsed }: UseWebSerialProps = {}) {
@@ -150,48 +150,22 @@ export function useWebSerial({ canvasRef, onLogParsed }: UseWebSerialProps = {})
       }
     }
 
-    // Parse general tags
-    let tag = "[ESP32]";
-    let text = line;
-    let color = "text-zinc-500";
-    let bold = false;
-
+    // Handle general tags for transmit/receive animation
     const tagMatch = line.match(/^(\[[A-Z0-9_ -]+\])(.*)/);
     if (tagMatch) {
-      tag = tagMatch[1];
-      text = tagMatch[2].trim();
-      
-      // Strict semantic colorization
-      if (tag.includes("SYSTEM") || tag.includes("INIT")) color = "text-cyan-400";
-      else if (tag.includes("JAMMER")) {
-        color = "text-[#00fffb]"; // bright electric cyan
-        bold = true;
+      const tag = tagMatch[1];
+      if (tag.includes("JAMMER") || tag.includes("IR TX") || tag.includes("TX")) {
         setIsTransmitting(true);
         setTimeout(() => setIsTransmitting(false), 200); 
       }
-      else if (tag.includes("IR TX") || tag.includes("TX")) {
-        color = "text-cyan-300";
-        setIsTransmitting(true);
-        setTimeout(() => setIsTransmitting(false), 200);
-      }
       else if (tag.includes("IR RX") || tag.includes("RX")) {
-        color = "text-emerald-400";
         setIsReceiving(true);
         setTimeout(() => setIsReceiving(false), 200);
       }
-      else if (tag.includes("ERROR") || tag.includes("FAIL")) { color = "text-red-500"; bold = true; }
-      else if (tag.includes("WARNING")) color = "text-amber-400";
-      else if (tag.includes("SPI")) color = "text-purple-400";
-      else if (tag.includes("SD")) color = "text-amber-500";
-      else if (tag.includes("SUCCESS") || tag.includes("CONNECTED")) color = "text-emerald-400";
-      else if (tag.includes("SCAN")) color = "text-emerald-300";
-      else if (tag.includes("BEACON")) color = "text-amber-300";
-      else if (tag.includes("DEAUTH")) { color = "text-red-400"; bold = true; }
-      else if (tag.includes("PORTAL")) color = "text-purple-300";
     }
 
     if (onLogParsed) {
-      onLogParsed({ time: timeStr, tag, text, color, bold });
+      onLogParsed(line);
     }
   };
 

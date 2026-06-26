@@ -1,0 +1,97 @@
+{
+  "version": "2.1",
+  "satanVersion": "1.0.0",
+  "workspaceType": "default",
+  "canvasSize": {
+    "w": 1440,
+    "h": 810
+  },
+  "panels": {
+    "aiDiagnostics": {
+      "x": 0,
+      "y": 0,
+      "w": 330,
+      "h": 900,
+      "zIndex": 30
+    },
+    "serialMonitor": {
+      "x": 336,
+      "y": 119,
+      "w": 354,
+      "h": 599,
+      "zIndex": 40
+    },
+    "oledDisplay": {
+      "x": 703,
+      "y": 139,
+      "w": 515,
+      "h": 579,
+      "zIndex": 40
+    },
+    "oledSettings": {
+      "x": 1230,
+      "y": 366,
+      "w": 354,
+      "h": 352,
+      "zIndex": 20
+    },
+    "controls": {
+      "x": 336,
+      "y": 734,
+      "w": 244,
+      "h": 161,
+      "zIndex": 20
+    },
+    "dpad": {
+      "x": 588,
+      "y": 734,
+      "w": 745,
+      "h": 161,
+      "zIndex": 30
+    },
+    "macros": {
+      "x": 1340,
+      "y": 734,
+      "w": 244,
+      "h": 161,
+      "zIndex": 10
+    },
+    "telemetry": {
+      "x": 703,
+      "y": 69,
+      "w": 515,
+      "h": 50,
+      "zIndex": 20
+    },
+    "satanHeader": {
+      "x": 346,
+      "y": 0,
+      "w": 344,
+      "h": 100,
+      "zIndex": 10
+    },
+    "irDiodes": {
+      "x": 1230,
+      "y": 259,
+      "w": 354,
+      "h": 91,
+      "zIndex": 10
+    }
+  },
+  "visibility": {
+    "aiDiagnostics": true,
+    "serialMonitor": true,
+    "oledDisplay": true,
+    "oledSettings": true,
+    "controls": true,
+    "dpad": true,
+    "macros": true,
+    "telemetry": false,
+    "satanHeader": true,
+    "irDiodes": true
+  },
+  "themeVersion": "1.0",
+  "compatFlags": [],
+  "createdAt": "2026-06-26T20:48:29.562Z",
+  "checksum": "0d7d4f8c"
+}

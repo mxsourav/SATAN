@@ -15,7 +15,7 @@ body {
   color: #f4f4f5; /* text-zinc-100 */
   font-family: var(--font-sans);
   margin: 0;
-  padding: 16px;
+  padding: 0;
   height: 100vh;
   overflow: hidden;
   display: flex;
@@ -329,4 +329,896 @@ input:checked ~ .toggle-dot {
 /* Color Wheel Picker Conic Gradient */
 .color-wheel-conic {
     background: conic-gradient(from 90deg, red, #ff00ff, blue, #00ffff, lime, yellow, red);
+}
+
+/* ====================================================================== */
+/* WORKSPACE BUILDER VISUAL LANGUAGE                                       */
+/* ====================================================================== */
+
+/* ── Root Container ──────────────────────────────────────────────────── */
+
+.workspace-root {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+}
+
+.workspace-canvas-container {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    position: relative;
+    transition: filter 0.4s ease;
+}
+
+.workspace-logical-canvas {
+    position: relative;
+}
+
+/* Seamless screen-wide canvas */
+.workspace-builder-active .workspace-logical-canvas {
+    border: none;
+    box-shadow: none;
+}
+
+/* ── Builder Mode Active State ───────────────────────────────────────── */
+
+.workspace-builder-active {
+    animation: builderEnter 0.4s ease-out;
+}
+
+@keyframes builderEnter {
+    from { filter: brightness(0.7) saturate(0.5); }
+    to   { filter: brightness(1) saturate(1); }
+}
+
+/* ── Blueprint Grid Background ───────────────────────────────────────── */
+
+.workspace-blueprint-grid {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background-image:
+        radial-gradient(circle, rgba(6, 182, 212, 0.10) 1px, transparent 1px);
+    background-size: 10px 10px;
+    animation: blueprintPulse 4s ease-in-out infinite;
+}
+
+@keyframes blueprintPulse {
+    0%, 100% { opacity: 0.6; }
+    50%      { opacity: 1; }
+}
+
+/* ── Overlay Canvas (snap guides) ────────────────────────────────────── */
+
+.workspace-overlay-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 55;
+}
+
+/* ── Panel Wrapper ───────────────────────────────────────────────────── */
+
+.workspace-panel-wrapper {
+    position: absolute;
+    border-radius: 12px;
+}
+
+.workspace-panel-editable {
+    box-shadow: 0 0 0 1px rgba(220, 220, 220, 0.2), 0 4px 12px rgba(0, 0, 0, 0.5);
+    transition: box-shadow 0.15s ease;
+}
+
+.workspace-panel-wrapper.panel-selected-state {
+    box-shadow: 0 0 0 1.5px rgba(220, 220, 220, 0.75), 0 6px 24px rgba(0, 0, 0, 0.7) !important;
+}
+
+.workspace-panel-content {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: inherit;
+    container-type: size;
+}
+
+/* ── Panel Outline (builder active) ──────────────────────────────────── */
+
+.workspace-panel-outline {
+    position: absolute;
+    inset: 0;
+    border: 1.5px dashed rgba(220, 220, 220, 0.75);
+    border-radius: 12px;
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* ── Drag Header ─────────────────────────────────────────────────────── */
+
+.workspace-drag-header {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    height: 28px;
+    margin-bottom: 4px;
+    background: linear-gradient(180deg, rgba(24, 24, 27, 0.98) 0%, rgba(9, 9, 11, 0.95) 100%);
+    border: 1px solid rgba(220, 220, 220, 0.45);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 8px;
+    cursor: grab;
+    z-index: 6;
+    user-select: none;
+    backdrop-filter: blur(8px);
+    pointer-events: auto;
+}
+
+.workspace-drag-header:active {
+    cursor: grabbing;
+}
+
+.workspace-drag-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #a1a1aa;
+    text-transform: uppercase;
+    flex: 1;
+}
+
+.workspace-dimension-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    color: rgba(6, 182, 212, 0.6);
+    letter-spacing: 0.03em;
+}
+
+/* ── Z-Priority Badge ────────────────────────────────────────────────── */
+
+.workspace-z-badge {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 0 4px currentColor;
+}
+
+/* ── Resize Handles ──────────────────────────────────────────────────── */
+
+.workspace-resize-handle {
+    background: transparent;
+    z-index: 8;
+    pointer-events: auto;
+    transition: background-color 0.15s ease;
+}
+
+.workspace-resize-handle:hover {
+    background: rgba(220, 220, 220, 0.3) !important;
+}
+
+/* ── Workspace Layout Tabs ──────────────────────────────────────────── */
+
+.workspace-tabs-list {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    pointer-events: auto;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+    animation: toolbarSlideIn 0.3s ease-out;
+}
+
+.workspace-tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: rgba(24, 24, 27, 0.7);
+    border: 1px solid rgba(63, 63, 70, 0.4);
+    border-radius: 8px;
+    color: #a1a1aa;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    backdrop-filter: blur(12px);
+    position: relative;
+}
+
+.workspace-tab:hover {
+    background: rgba(39, 39, 42, 0.8);
+    color: #e4e4e7;
+    border-color: rgba(6, 182, 212, 0.25);
+}
+
+.workspace-tab-active {
+    background: rgba(6, 182, 212, 0.12);
+    border: 1px solid rgba(6, 182, 212, 0.35) !important;
+    color: #22d3ee;
+    box-shadow: 
+        0 0 8px rgba(6, 182, 212, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.workspace-tab-rename-input {
+    background: #09090b;
+    border: 1px solid rgba(6, 182, 212, 0.8);
+    border-radius: 4px;
+    color: #22d3ee;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 0px 4px;
+    width: 80px;
+    text-align: center;
+    outline: none;
+}
+
+.workspace-tab-delete-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    color: #71717a;
+    font-size: 8px;
+    transition: all 0.15s ease;
+    margin-left: 2px;
+}
+
+.workspace-tab-delete-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+}
+
+.workspace-add-tab-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(24, 24, 27, 0.7);
+    border: 1px solid rgba(63, 63, 70, 0.4);
+    color: #a1a1aa;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
+    backdrop-filter: blur(12px);
+    margin-bottom: 8px;
+}
+
+.workspace-add-tab-btn:hover {
+    background: rgba(6, 182, 212, 0.15);
+    border-color: rgba(6, 182, 212, 0.35);
+    color: #22d3ee;
+    box-shadow: 0 0 8px rgba(6, 182, 212, 0.15);
+}
+
+/* ── Toolbar ─────────────────────────────────────────────────────────── */
+
+.workspace-toolbar-container {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 60;
+    pointer-events: none;
+}
+
+.workspace-toolbar-container * {
+    pointer-events: auto;
+}
+
+.workspace-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(9, 9, 11, 0.95);
+    border: 1px solid rgba(39, 39, 42, 0.6);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    backdrop-filter: blur(12px);
+    flex-wrap: wrap;
+    animation: toolbarSlideIn 0.3s ease-out;
+}
+
+@keyframes toolbarSlideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.workspace-toolbar-section {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.workspace-toolbar-divider {
+    width: 1px;
+    height: 20px;
+    background: rgba(63, 63, 70, 0.5);
+    margin: 0 4px;
+}
+
+.workspace-toolbar-toggle {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    background: rgba(24, 24, 27, 0.6);
+    border: 1px solid rgba(63, 63, 70, 0.4);
+    border-radius: 6px;
+    color: #a1a1aa;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 8px;
+}
+
+.workspace-toolbar-toggle:hover {
+    background: rgba(39, 39, 42, 0.6);
+    color: #e4e4e7;
+    border-color: rgba(6, 182, 212, 0.3);
+}
+
+/* ── Toolbar Buttons ─────────────────────────────────────────────────── */
+
+.workspace-toolbar-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background: rgba(24, 24, 27, 0.7);
+    border: 1px solid rgba(39, 39, 42, 0.5);
+    border-radius: 6px;
+    color: #a1a1aa;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.workspace-toolbar-btn:hover {
+    background: rgba(39, 39, 42, 0.8);
+    color: #e4e4e7;
+}
+
+.workspace-toolbar-btn-primary {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #34d399;
+}
+
+.workspace-toolbar-btn-primary:hover {
+    background: rgba(16, 185, 129, 0.25);
+    color: #6ee7b7;
+}
+
+.workspace-toolbar-btn-danger {
+    color: #f87171;
+}
+
+.workspace-toolbar-btn-danger:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* ── Mode Badge ──────────────────────────────────────────────────────── */
+
+.workspace-mode-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+}
+
+.workspace-mode-builder {
+    background: rgba(6, 182, 212, 0.12);
+    border: 1px solid rgba(6, 182, 212, 0.25);
+    color: #22d3ee;
+}
+
+.workspace-mode-preview {
+    background: rgba(139, 92, 246, 0.12);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    color: #a78bfa;
+}
+
+/* ── Panel Visibility Toggles ────────────────────────────────────────── */
+
+.workspace-toolbar-panels {
+    flex-wrap: wrap;
+    gap: 3px;
+}
+
+.workspace-panel-toggle {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 7px;
+    background: rgba(9, 9, 11, 0.6);
+    border: 1px solid rgba(39, 39, 42, 0.4);
+    border-radius: 5px;
+    font-family: var(--font-mono);
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: #52525b;
+}
+
+.workspace-panel-visible {
+    color: #a1a1aa;
+    border-color: rgba(63, 63, 70, 0.6);
+}
+
+.workspace-panel-hidden {
+    opacity: 0.5;
+}
+
+.workspace-panel-toggle-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #3f3f46;
+    transition: all 0.15s ease;
+}
+
+.workspace-panel-toggle-dot.active {
+    background: #22d3ee;
+    box-shadow: 0 0 4px rgba(6, 182, 212, 0.6);
+}
+
+/* ── Manual Dimension Inputs in Header ────────────────────────────────── */
+
+.workspace-dimension-inputs {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    margin-left: auto;
+    padding-right: 4px;
+}
+
+.workspace-size-input {
+    width: 38px;
+    height: 18px;
+    background: #09090b;
+    border: 1px solid rgba(63, 63, 70, 0.6);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    color: #d4d4d8;
+    text-align: center;
+    padding: 0;
+    outline: none;
+    transition: all 0.15s ease;
+}
+
+.workspace-size-input:focus {
+    border-color: rgba(6, 182, 212, 0.8);
+    box-shadow: 0 0 4px rgba(6, 182, 212, 0.4);
+    color: #22d3ee;
+}
+
+/* Hide spin buttons for Chrome/Safari/Edge/Opera */
+.workspace-size-input::-webkit-outer-spin-button,
+.workspace-size-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Hide spin buttons for Firefox */
+.workspace-size-input {
+    -moz-appearance: textfield;
+}
+
+/* ── Container Queries for Responsive Card Layouts ────────────────────── */
+
+/* ── Workspace Safe Range Viewport Boundary Borders ─────────────────── */
+.workspace-builder-active .workspace-logical-canvas,
+.workspace-preview-active .workspace-logical-canvas {
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+.workspace-builder-active .workspace-logical-canvas.canvas-valid,
+.workspace-preview-active .workspace-logical-canvas.canvas-valid {
+    border: 1.5px solid #10b981; /* Thin clean green */
+}
+
+.workspace-builder-active .workspace-logical-canvas.canvas-warning,
+.workspace-preview-active .workspace-logical-canvas.canvas-warning {
+    border: 1.5px solid #eab308; /* Thin clean yellow */
+}
+
+.workspace-builder-active .workspace-logical-canvas.canvas-error,
+.workspace-preview-active .workspace-logical-canvas.canvas-error {
+    border: 1.5px solid #ef4444; /* Thin clean red */
+}
+
+/* Dotted outlines and highlights for validation states */
+.workspace-panel-wrapper.panel-warning-state {
+    box-shadow: 0 0 0 1px #eab308, 0 4px 12px rgba(0, 0, 0, 0.6) !important;
+}
+.workspace-panel-wrapper.panel-warning-state .workspace-panel-outline {
+    border-color: #eab308 !important;
+}
+
+.workspace-panel-wrapper.panel-error-state {
+    box-shadow: 0 0 0 1px #ef4444, 0 4px 12px rgba(0, 0, 0, 0.6) !important;
+}
+.workspace-panel-wrapper.panel-error-state .workspace-panel-outline {
+    border-color: #ef4444 !important;
+}
+
+/* Grid Opacity States */
+.grid-opacity-off {
+    opacity: 0 !important;
+}
+.grid-opacity-low {
+    opacity: 0.15 !important;
+}
+.grid-opacity-medium {
+    opacity: 0.45 !important;
+}
+
+/* ── Card Container Queries for Sizing and Scale ─────────────────────── */
+
+/* Generic Shrinkages when container height is small */
+@container (max-height: 250px) {
+    .panel-hardware {
+        padding: 8px !important;
+    }
+    .panel-hardware h2,
+    .panel-hardware h3 {
+        font-size: 8px !important;
+        margin-bottom: 4px !important;
+    }
+    .panel-hardware .flex,
+    .panel-hardware .grid {
+        gap: 6px !important;
+    }
+}
+
+@container (max-height: 180px) {
+    .panel-hardware {
+        padding: 6px !important;
+    }
+    .panel-hardware h2,
+    .panel-hardware h3 {
+        display: none !important; /* Hide redundant inner headings when extremely short */
+    }
+    .panel-hardware .flex,
+    .panel-hardware .grid {
+        gap: 4px !important;
+    }
+}
+
+/* 1. oledSettings panel color wheel responsiveness */
+@container (max-width: 250px) {
+    .panel-responsive-flex {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 12px !important;
+    }
+}
+
+/* OLED Settings Color Wheel scaling */
+@container (max-height: 250px) {
+    .panel-responsive-flex {
+        flex-direction: row !important; /* Keep row so color wheel and preview sit side by side */
+        gap: 8px !important;
+    }
+    #color-wheel {
+        width: 56px !important;
+        height: 56px !important;
+        box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.8) !important;
+    }
+    #color-wheel .w-8 {
+        width: 14px !important;
+        height: 14px !important;
+    }
+    #color-wheel .w-3\.5 {
+        width: 8px !important;
+        height: 8px !important;
+    }
+    .panel-responsive-flex .p-2 {
+        padding: 4px !important;
+    }
+    .panel-responsive-flex .h-10 {
+        height: 24px !important;
+    }
+    .panel-responsive-flex span {
+        font-size: 8px !important;
+        line-height: 1 !important;
+    }
+    .panel-hardware.p-4 {
+        padding: 8px !important;
+    }
+    .panel-hardware .h-px {
+        margin-top: 4px !important;
+        margin-bottom: 4px !important;
+    }
+    .panel-hardware .space-y-3 {
+        margin-top: 4px !important;
+    }
+    .panel-hardware .space-y-3 > div {
+        margin-top: 2px !important;
+    }
+    .panel-hardware .w-5 {
+        width: 14px !important;
+        height: 14px !important;
+    }
+}
+
+/* 2. System Controls & Mode Selectors flex responsiveness */
+@container (max-width: 260px) {
+    .panel-responsive-flex-controls {
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+    }
+    .panel-responsive-flex-controls button {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+}
+
+@container (min-width: 261px) {
+    .panel-responsive-flex-controls {
+        flex-direction: row !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+}
+
+/* System Controls & Macros adjustments */
+@container (max-height: 150px) {
+    .panel-responsive-flex-controls {
+        flex-direction: row !important;
+        gap: 4px !important;
+        padding: 4px !important;
+    }
+    .panel-responsive-flex-controls .hardware-key {
+        padding: 4px 6px !important;
+        flex-direction: column !important;
+        gap: 2px !important;
+    }
+    .panel-responsive-flex-controls .hardware-key span {
+        font-size: 8px !important;
+    }
+    .panel-responsive-flex-controls .hardware-key svg {
+        width: 12px !important;
+        height: 12px !important;
+    }
+}
+
+/* 3. Telemetry values flex responsiveness */
+@container (max-width: 240px) {
+    .panel-responsive-flex-telemetry {
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+}
+
+@container (min-width: 241px) {
+    .panel-responsive-flex-telemetry {
+        flex-direction: row !important;
+        gap: 16px !important;
+    }
+}
+
+/* Telemetry spacing */
+@container (max-height: 120px) {
+    .panel-hardware.p-3.bg-black\/20 {
+        padding: 6px !important;
+    }
+    .panel-hardware.p-3.bg-black\/20 h2 {
+        display: none !important;
+    }
+    .panel-responsive-flex-telemetry {
+        flex-direction: row !important;
+        gap: 12px !important;
+        align-items: center !important;
+        justify-content: space-around !important;
+    }
+    .panel-responsive-flex-telemetry .flex-col {
+        gap: 2px !important;
+        align-items: center !important;
+    }
+    .panel-responsive-flex-telemetry span {
+        font-size: 9px !important;
+        line-height: 1 !important;
+    }
+    .panel-responsive-flex-telemetry .text-xs {
+        font-size: 10px !important;
+    }
+}
+
+/* 4. SATAN Header panel responsiveness */
+@container (max-width: 220px) {
+    .panel-satan-header .flex {
+        flex-direction: column !important;
+        gap: 6px !important;
+        text-align: center !important;
+    }
+    .panel-satan-header h1 {
+        font-size: 14px !important;
+    }
+    .panel-satan-header .text-\[10px\] {
+        display: none !important; /* Hide description when very small */
+    }
+}
+@container (max-height: 90px) {
+    .panel-satan-header .text-\[10px\] {
+        display: none !important; /* Hide description when short */
+    }
+    .panel-satan-header .w-10 {
+        width: 24px !important;
+        height: 24px !important;
+    }
+    .panel-satan-header .w-5 {
+        width: 12px !important;
+        height: 12px !important;
+    }
+}
+
+/* 5. IR Diodes panel responsiveness */
+@container (max-width: 280px) {
+    .panel-ir-diodes .flex-wrap {
+        flex-direction: column !important;
+        gap: 6px !important;
+    }
+    .panel-ir-diodes .min-w-\[120px\] {
+        min-width: 100% !important;
+        width: 100% !important;
+    }
+}
+@container (max-height: 90px) {
+    .panel-ir-diodes {
+        padding: 4px !important;
+    }
+    .panel-ir-diodes .flex-wrap {
+        gap: 4px !important;
+    }
+    .panel-ir-diodes .py-1\.5 {
+        padding-top: 4px !important;
+        padding-bottom: 4px !important;
+    }
+    .panel-ir-diodes svg {
+        width: 20px !important;
+        height: 20px !important;
+    }
+}
+
+/* Serial Log Panel adjustments */
+@container (max-height: 280px) {
+    #serial-log-panel .p-4 {
+        padding: 8px !important;
+    }
+    #serial-log-panel .pb-2\.5 {
+        padding-bottom: 4px !important;
+    }
+    #serial-log-panel .gap-3 {
+        gap: 4px !important;
+    }
+    #serial-log-panel h2 {
+        display: none !important; /* Hide serial log duplicate inner title */
+    }
+    #serial-log-panel select {
+        height: 20px !important;
+        padding-top: 2px !important;
+        padding-bottom: 2px !important;
+        font-size: 8px !important;
+    }
+}
+@container (max-height: 200px) {
+    #serial-log-panel .px-4.pb-4.pt-3 {
+        display: none !important; /* Hide style & diagnostic level footer completely */
+    }
+    #serial-log-panel .flex-1 {
+        font-size: 8.5px !important; /* Shrink logs text font size */
+    }
+}
+/* Serial buttons text hiding for icon-only fallback */
+@container (max-width: 250px) or (max-height: 250px) {
+    #serial-log-panel button span {
+        display: none !important;
+    }
+    #serial-log-panel button {
+        padding: 4px 6px !important;
+        justify-content: center !important;
+    }
+}
+
+/* D-PAD key dimensions scaling */
+@container (max-height: 210px) or (max-width: 400px) {
+    .panel-dpad .grid {
+        gap-x: 6px !important;
+        gap-y: 6px !important;
+        max-width: 320px !important;
+    }
+    .panel-dpad button {
+        width: 100% !important;
+        height: 100% !important;
+        max-height: 28px !important;
+        max-width: 64px !important;
+        padding: 2px !important;
+    }
+    .panel-dpad svg {
+        width: 14px !important;
+        height: 14px !important;
+    }
+    .panel-dpad .w-16 {
+        width: 100% !important;
+        max-width: 52px !important;
+        height: 20px !important;
+        font-size: 8px !important;
+    }
+}
+
+/* AI Diagnostics compact formatting */
+@container (max-height: 280px) {
+    .panel-hardware.bg-\[\#050608\]\/95 .h-14 {
+        height: 28px !important; /* Shrink header to 28px */
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+    .panel-hardware.bg-\[\#050608\]\/95 h2 {
+        display: none !important; /* Hide text */
+    }
+    .panel-hardware.bg-\[\#050608\]\/95 .p-4 {
+        padding: 8px !important;
+    }
+    .panel-hardware.bg-\[\#050608\]\/95 .space-y-4 > * {
+        margin-top: 4px !important;
+        margin-bottom: 4px !important;
+    }
+    .panel-hardware.bg-\[\#050608\]\/95 input {
+        padding: 4px 8px !important;
+        font-size: 11px !important;
+    }
+    .panel-hardware.bg-\[\#050608\]\/95 .h-12 {
+        width: 24px !important;
+        height: 24px !important;
+    }
+    .panel-hardware.bg-\[\#050608\]\/95 .text-sm {
+        font-size: 11px !important;
+    }
+    .panel-hardware.bg-\[\#050608\]\/95 .text-xs {
+        font-size: 10px !important;
+    }
 }
