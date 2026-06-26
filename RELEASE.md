@@ -8,7 +8,11 @@
 
 ## What's New in v1.1.0
 
-### 1. Multi-Profile Layout Switcher (Tabs)
+### 1. AI Diagnostics Integration (Gemini / OpenAI API)
+- Added full real-time terminal log parsing and automated troubleshooting diagnostics powered by secure LLM adapters (Gemini and OpenAI APIs).
+- Interactive AI Diagnostics panel capable of highlighting software bugs, parsing hex dumps, and suggesting micro-actions.
+
+### 2. Multi-Profile Layout Switcher (Tabs)
 - Interactive profile manager allowing users to add, switch, rename, and delete layout profiles directly from the tab manager bar.
 - Automatically saves and persists profile configurations across sessions.
 

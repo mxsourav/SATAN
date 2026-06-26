@@ -699,76 +699,140 @@ export default function App() {
 
             {/* Modal Content - Scrollable */}
             <div className="flex-1 overflow-y-auto p-6 space-y-8 font-mono text-xs select-text cyberdeck-scrollbar bg-[#030406]">
-              {/* Visual Architecture Map - "God Lvl Visual Thing" */}
-              <div className="bg-[#07090d]/90 border border-zinc-800/50 rounded-xl p-5 relative overflow-hidden">
-                <h3 className="text-zinc-500 font-bold uppercase tracking-wider text-[10px] mb-4 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full" />
-                  Logical Architecture & Data Streams
-                </h3>
-                
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 relative">
-                  {/* Column 1: Client Frontend */}
-                  <div className="bg-[#0b0f16]/80 border border-zinc-800/80 rounded-lg p-4 space-y-3 relative z-10 flex flex-col justify-between">
+              {/* Visual System Architecture Diagram - "God Level Visual Map" */}
+              <div className="bg-[#07090d]/90 border border-zinc-800/60 rounded-xl p-6 relative overflow-hidden shadow-[inset_0_4px_24px_rgba(0,0,0,0.6)]">
+                <div className="flex justify-between items-center mb-6 border-b border-zinc-800/40 pb-3">
+                  <h3 className="text-zinc-400 font-bold uppercase tracking-wider text-[10px] flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse" />
+                    SYSTEM TOPOLOGY & DATA STREAM FLOWS
+                  </h3>
+                  <div className="flex gap-4 text-[9px] text-zinc-500">
+                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded bg-indigo-500/20 border border-indigo-500/50" /> FRONTEND</div>
+                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded bg-cyan-500/20 border border-cyan-500/50" /> BRIDGE</div>
+                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded bg-purple-500/20 border border-purple-500/50" /> AI CORE</div>
+                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded bg-red-500/20 border border-red-500/50" /> ESP32</div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 relative min-h-[300px]">
+                  
+                  {/* Column 1: CLIENT FRONTEND (Vite/React) */}
+                  <div className="bg-[#0b0f16]/90 border border-indigo-950/60 rounded-xl p-4 flex flex-col justify-between shadow-[0_0_15px_rgba(99,102,241,0.05)]">
                     <div>
-                      <span className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest block mb-1">FRONTEND</span>
-                      <span className="text-[11px] font-bold text-zinc-200 block">Vercel Web App</span>
-                      <p className="text-[10px] text-zinc-500 mt-1 leading-relaxed">Single-page React client compiling into optimized static assets.</p>
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">FRONTEND</span>
+                        <span className="text-[8px] bg-indigo-950 text-indigo-300 font-bold px-1 rounded-sm border border-indigo-800/40">ONLINE</span>
+                      </div>
+                      <span className="text-xs font-bold text-zinc-100 block">Vite + React SPA</span>
+                      <p className="text-[10px] text-zinc-500 mt-1 leading-relaxed">Executes the cyberdeck interface, mirrors OLED frame buffers, and formats serial telemetry stream.</p>
                     </div>
-                    <div className="border-t border-zinc-900 pt-2.5 space-y-1.5 text-[10px] text-zinc-400">
-                      <div className="flex items-center gap-1.5"><div className="w-1 h-1 bg-indigo-500 rounded-full"/>React + TypeScript</div>
-                      <div className="flex items-center gap-1.5"><div className="w-1 h-1 bg-indigo-500 rounded-full"/>Workspace Layout Engine</div>
-                      <div className="flex items-center gap-1.5"><div className="w-1 h-1 bg-indigo-500 rounded-full"/>Serial Stream Interface</div>
+                    <div className="mt-4 border-t border-zinc-900/60 pt-3 space-y-2 text-[10px]">
+                      <div className="bg-black/35 border border-zinc-900/40 p-1.5 rounded font-bold text-zinc-400">
+                        Workspace engine
+                        <span className="text-[8px] text-zinc-600 block font-normal">IndexedDB profiles</span>
+                      </div>
+                      <div className="bg-black/35 border border-zinc-900/40 p-1.5 rounded font-bold text-zinc-400">
+                        OLED mirror component
+                        <span className="text-[8px] text-zinc-600 block font-normal">Pixel grid mapping</span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Column 2: WebSerial API Bridge */}
-                  <div className="bg-[#0b0f16]/80 border border-zinc-800/80 rounded-lg p-4 space-y-3 relative z-10 flex flex-col justify-between">
+                  {/* Column 2: DATA CONNECTION BRIDGE (WebSerial) */}
+                  <div className="bg-[#0b0f16]/90 border border-cyan-950/60 rounded-xl p-4 flex flex-col justify-between shadow-[0_0_15px_rgba(6,182,212,0.05)]">
                     <div>
-                      <span className="text-[9px] font-bold text-cyan-400 uppercase tracking-widest block mb-1">BRIDGE LAYER</span>
-                      <span className="text-[11px] font-bold text-zinc-200 block">WebSerial Bridge</span>
-                      <p className="text-[10px] text-zinc-500 mt-1 leading-relaxed">Direct hardware communication layer running in Chromium sandbox.</p>
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="text-[9px] font-bold text-cyan-400 uppercase tracking-widest">BRIDGE</span>
+                        <span className="text-[8px] bg-cyan-950 text-cyan-300 font-bold px-1 rounded-sm border border-cyan-800/40">115200 BAUD</span>
+                      </div>
+                      <span className="text-xs font-bold text-zinc-100 block">WebSerial Bridge</span>
+                      <p className="text-[10px] text-zinc-500 mt-1 leading-relaxed">Direct byte stream pipe executing inside Chromium sandbox to communicate with ESP32.</p>
                     </div>
-                    <div className="border-t border-zinc-900 pt-2.5 space-y-1.5 text-[10px] text-zinc-400">
-                      <div className="flex items-center gap-1.5"><div className="w-1 h-1 bg-cyan-400 rounded-full"/>Baud: 115200 (Framed)</div>
-                      <div className="flex items-center gap-1.5"><div className="w-1 h-1 bg-cyan-400 rounded-full"/>Auto-reconnect Daemon</div>
-                      <div className="flex items-center gap-1.5"><div className="w-1 h-1 bg-cyan-400 rounded-full"/>OLED Frame Buffer Sync</div>
+                    <div className="mt-4 border-t border-zinc-900/60 pt-3 space-y-2 text-[10px]">
+                      <div className="bg-black/35 border border-zinc-900/40 p-1.5 rounded font-bold text-zinc-400">
+                        Auto-reconnect handler
+                        <span className="text-[8px] text-zinc-600 block font-normal">Serial handshake</span>
+                      </div>
+                      <div className="bg-black/35 border border-zinc-900/40 p-1.5 rounded font-bold text-zinc-400">
+                        Buffer stream parser
+                        <span className="text-[8px] text-zinc-600 block font-normal">ANSI code cleanup</span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Column 3: Microcontroller */}
-                  <div className="bg-[#0b0f16]/80 border border-zinc-800/80 rounded-lg p-4 space-y-3 relative z-10 flex flex-col justify-between">
+                  {/* Column 3: AI DIAGNOSTICS SYSTEM (v1.1.0 Active) */}
+                  <div className="bg-[#0b0f16]/90 border border-purple-950/60 rounded-xl p-4 flex flex-col justify-between shadow-[0_0_15px_rgba(168,85,247,0.05)]">
                     <div>
-                      <span className="text-[9px] font-bold text-red-400 uppercase tracking-widest block mb-1">HARDWARE</span>
-                      <span className="text-[11px] font-bold text-zinc-200 block">ESP32 Core</span>
-                      <p className="text-[10px] text-zinc-500 mt-1 leading-relaxed">Low-level firmware execution unit orchestrating peripherals.</p>
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="text-[9px] font-bold text-purple-400 uppercase tracking-widest">AI DIAGNOSTICS</span>
+                        <span className="text-[8px] bg-purple-950 text-purple-300 font-bold px-1 rounded-sm border border-purple-800/40">ACTIVE (v1.1.0)</span>
+                      </div>
+                      <span className="text-xs font-bold text-zinc-100 block">LLM Adapters</span>
+                      <p className="text-[10px] text-zinc-500 mt-1 leading-relaxed">Direct API stream analyzing serial console output, resolving anomalies, and compiling reports.</p>
                     </div>
-                    <div className="border-t border-zinc-900 pt-2.5 space-y-1.5 text-[10px] text-zinc-400">
-                      <div className="flex items-center gap-1.5"><div className="w-1 h-1 bg-red-400 rounded-full"/>SLIP Bootloader Mode</div>
-                      <div className="flex items-center gap-1.5"><div className="w-1 h-1 bg-red-400 rounded-full"/>OLED Mirror Output</div>
-                      <div className="flex items-center gap-1.5"><div className="w-1 h-1 bg-red-400 rounded-full"/>IR Transceiver Array</div>
+                    <div className="mt-4 border-t border-zinc-900/60 pt-3 space-y-2 text-[10px]">
+                      <div className="bg-black/35 border border-zinc-900/40 p-1.5 rounded font-bold text-zinc-400">
+                        Gemini & OpenAI API
+                        <span className="text-[8px] text-zinc-600 block font-normal">Prompt orchestrator</span>
+                      </div>
+                      <div className="bg-black/35 border border-zinc-900/40 p-1.5 rounded font-bold text-zinc-400">
+                        Auto Diagnostic engine
+                        <span className="text-[8px] text-zinc-600 block font-normal">Anomaly identification</span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Column 4: Remote API Service */}
-                  <div className="bg-[#0b0f16]/80 border border-zinc-800/80 rounded-lg p-4 space-y-3 relative z-10 flex flex-col justify-between">
+                  {/* Column 4: HARDWARE TARGET (ESP32) */}
+                  <div className="bg-[#0b0f16]/90 border border-red-950/60 rounded-xl p-4 flex flex-col justify-between shadow-[0_0_15px_rgba(239,68,68,0.05)]">
                     <div>
-                      <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-widest block mb-1">BACKEND (FUTURE)</span>
-                      <span className="text-[11px] font-bold text-zinc-200 block">Node.js API</span>
-                      <p className="text-[10px] text-zinc-500 mt-1 leading-relaxed">Remote services for OTA update indexing and firmware distribution.</p>
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="text-[9px] font-bold text-red-400 uppercase tracking-widest">MCU TARGET</span>
+                        <span className="text-[8px] bg-red-950 text-red-300 font-bold px-1 rounded-sm border border-red-800/40">ESP32</span>
+                      </div>
+                      <span className="text-xs font-bold text-zinc-100 block">ESP32 Core Device</span>
+                      <p className="text-[10px] text-zinc-500 mt-1 leading-relaxed">Runs firmware (TetraX / BWifiKill), executes IR transceivers, and handles serial console packets.</p>
                     </div>
-                    <div className="border-t border-zinc-900 pt-2.5 space-y-1.5 text-[10px] text-zinc-400">
-                      <div className="flex items-center gap-1.5"><div className="w-1 h-1 bg-emerald-400 rounded-full"/>OTA Payload hosting</div>
-                      <div className="flex items-center gap-1.5"><div className="w-1 h-1 bg-emerald-400 rounded-full"/>Railway / Render Host</div>
-                      <div className="flex items-center gap-1.5"><div className="w-1 h-1 bg-emerald-400 rounded-full"/>S3 Binary Registry</div>
+                    <div className="mt-4 border-t border-zinc-900/60 pt-3 space-y-2 text-[10px]">
+                      <div className="bg-black/35 border border-zinc-900/40 p-1.5 rounded font-bold text-zinc-400">
+                        OLED frame buffer
+                        <span className="text-[8px] text-zinc-600 block font-normal">Mirror output stream</span>
+                      </div>
+                      <div className="bg-black/35 border border-zinc-900/40 p-1.5 rounded font-bold text-zinc-400">
+                        IR transceiver array
+                        <span className="text-[8px] text-zinc-600 block font-normal">Transmissions & captures</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Column 5: REMOTE BACKEND & STORAGE (Planned) */}
+                  <div className="bg-[#0b0f16]/90 border border-emerald-950/60 rounded-xl p-4 flex flex-col justify-between shadow-[0_0_15px_rgba(16,185,129,0.05)] opacity-60">
+                    <div>
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-widest">REMOTE SERVICES</span>
+                        <span className="text-[8px] bg-zinc-900 text-zinc-400 font-bold px-1 rounded-sm border border-zinc-800/40">ROADMAP</span>
+                      </div>
+                      <span className="text-xs font-bold text-zinc-100 block">Express API Backend</span>
+                      <p className="text-[10px] text-zinc-500 mt-1 leading-relaxed">Central storage repository supporting OTA firmware uploads and user profiles.</p>
+                    </div>
+                    <div className="mt-4 border-t border-zinc-900/60 pt-3 space-y-2 text-[10px]">
+                      <div className="bg-black/35 border border-zinc-900/40 p-1.5 rounded font-bold text-zinc-400">
+                        AWS S3 storage store
+                        <span className="text-[8px] text-zinc-600 block font-normal">Binary OTA firmware</span>
+                      </div>
+                      <div className="bg-black/35 border border-zinc-900/40 p-1.5 rounded font-bold text-zinc-400">
+                        PostgreSQL Database
+                        <span className="text-[8px] text-zinc-600 block font-normal">Fleet management registry</span>
+                      </div>
                     </div>
                   </div>
 
                   {/* SVG Connecting Flow Lines Overlay */}
                   <div className="absolute inset-0 pointer-events-none hidden lg:block" style={{ zIndex: 1 }}>
                     <svg className="w-full h-full" style={{ position: 'absolute', top: 0, left: 0 }}>
-                      <line x1="22%" y1="50%" x2="26%" y2="50%" stroke="rgba(99, 102, 241, 0.4)" strokeWidth="1.5" strokeDasharray="4,4" />
-                      <line x1="47%" y1="50%" x2="51%" y2="50%" stroke="rgba(6, 182, 212, 0.4)" strokeWidth="1.5" strokeDasharray="4,4" />
-                      <line x1="72%" y1="50%" x2="76%" y2="50%" stroke="rgba(239, 68, 68, 0.4)" strokeWidth="1.5" strokeDasharray="4,4" />
+                      <path d="M 18% 50% L 21% 50%" stroke="rgba(99, 102, 241, 0.4)" strokeWidth="1.5" strokeDasharray="4,4" fill="none" />
+                      <path d="M 38% 50% L 61% 50%" stroke="rgba(6, 182, 212, 0.4)" strokeWidth="1.5" strokeDasharray="4,4" fill="none" />
+                      <path d="M 18% 30% Q 25% 15% 41% 30%" stroke="rgba(168, 85, 247, 0.4)" strokeWidth="1.5" strokeDasharray="4,4" fill="none" />
+                      <path d="M 78% 70% Q 50% 85% 18% 70%" stroke="rgba(16, 185, 129, 0.2)" strokeWidth="1.5" strokeDasharray="4,4" fill="none" />
                     </svg>
                   </div>
                 </div>
@@ -783,6 +847,13 @@ export default function App() {
                     WHAT'S NEW IN v1.1.0
                   </h3>
                   <ul className="space-y-3.5 text-[10px] text-zinc-400 leading-relaxed list-none pl-0">
+                    <li className="flex gap-2">
+                      <span className="text-indigo-400 shrink-0 select-none">■</span>
+                      <div>
+                        <strong className="text-zinc-300">AI Diagnostics Integration (Gemini / OpenAI API):</strong>
+                        <p className="mt-0.5 text-zinc-500">Implemented real-time console log diagnostics and auto-troubleshooting loop via LLM adapters. Initially planned for future roadmap, fully deployed in v1.1.0.</p>
+                      </div>
+                    </li>
                     <li className="flex gap-2">
                       <span className="text-indigo-400 shrink-0 select-none">■</span>
                       <div>
@@ -847,6 +918,13 @@ export default function App() {
                       <div>
                         <strong className="text-zinc-300">v1.4.0: OTA Update Orchestration</strong>
                         <p className="mt-0.5 text-zinc-500">Initiate secure WiFi network firmware rollouts directly from the control console.</p>
+                      </div>
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="text-emerald-400 shrink-0 select-none">□</span>
+                      <div>
+                        <strong className="text-zinc-300">v1.5.0: Multi-Device Dashboard</strong>
+                        <p className="mt-0.5 text-zinc-500">Simultaneously connect and view multiple ESP32 devices on a split screen layout with fleet command broadcast capability.</p>
                       </div>
                     </li>
                     <li className="flex gap-2">

@@ -91,17 +91,6 @@ Date:    June 27, 2026
    - Install as app on phone/tablet
    - Touch-optimized D-pad and controls
 
-9. AI API INTEGRATION (RESEARCH & ANALYSIS)
-   -----------------------------------------
-   - Integrate an AI API (e.g., Gemini/OpenAI) to process and analyze
-     serial monitor logs and data collected from the ESP32 device.
-   - Purpose: Strict adherence to ethical research methodologies. The AI
-     will identify anomalies, parse complex hexadecimal/binary dumps,
-     and generate structured reports based on raw environmental or
-     transmission data.
-   - Designed exclusively for analytical, academic, and security research
-     purposes.
-   - Requires user-provided API key or secure backend proxy.
 
 ---------------------------------------------------------
   BACKEND ARCHITECTURE (FUTURE)
@@ -136,7 +125,8 @@ Backend stack (planned):
 
   v1.0.0  [RELEASED] — Core serial monitor, OLED mirror,
                         IR tools, device control
-  v1.1.0  [CURRENT]  — Multi-profile layout manager (tabs),
+  v1.1.0  [CURRENT]  — AI diagnostics integration (Gemini/OpenAI),
+                        multi-profile layout manager (tabs),
                         mouse multi-selection mode, keyboard nudging
                         option, layout safety spacing engine,
                         and Figma-style snapping guides
